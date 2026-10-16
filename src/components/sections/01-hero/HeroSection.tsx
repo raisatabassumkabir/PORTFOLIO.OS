@@ -371,7 +371,7 @@ export function HeroSection({ data }: HeroSectionProps) {
               >
                 <animateMotion
                   path={pathD}
-                  dur={`${2.2 + index * 0.25}s`}
+                  dur={`${7.0 + index * 0.6}s`}
                   repeatCount="indefinite"
                 />
               </circle>
@@ -384,8 +384,8 @@ export function HeroSection({ data }: HeroSectionProps) {
               >
                 <animateMotion
                   path={pathD}
-                  dur={`${2.2 + index * 0.25}s`}
-                  begin={`${1.1 + index * 0.12}s`}
+                  dur={`${7.0 + index * 0.6}s`}
+                  begin={`${3.5 + index * 0.3}s`}
                   repeatCount="indefinite"
                 />
               </circle>
