@@ -126,6 +126,12 @@ export function PortraitXRayCanvas({
       }}
       onClick={onToggleLock}
       className="hero-portrait hero-portrait--reveal scene-copy hero-reveal-ready hero-reveal-active pointer-events-auto cursor-pointer absolute bottom-0 left-1/2 z-10 flex h-[88vh] w-auto -translate-x-1/2 items-end justify-center select-none flex-shrink-0"
+      style={{
+        WebkitMaskImage:
+          'radial-gradient(ellipse 88% 85% at 50% 55%, #000 50%, rgba(0,0,0,0.85) 70%, rgba(0,0,0,0.3) 88%, transparent 100%)',
+        maskImage:
+          'radial-gradient(ellipse 88% 85% at 50% 55%, #000 50%, rgba(0,0,0,0.85) 70%, rgba(0,0,0,0.3) 88%, transparent 100%)',
+      }}
     >
       <div className="relative flex h-full w-auto items-end justify-center">
         {/* Faint Ambient Green Beam (Background Glow) directly behind the portrait layer */}
