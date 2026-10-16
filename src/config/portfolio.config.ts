@@ -5,15 +5,18 @@ export const portfolioConfig: PortfolioConfig = {
     osName: 'PORTFOLIO.OS',
     version: 'V / 03.26',
     buildStatus: 'ACTIVE',
-    monogram: 'MK|',
+    monogram: 'TB',
     availabilityText: 'AVAILABLE FOR OPPORTUNITIES',
   },
   hero: {
-    firstName: 'MARTIN',
-    lastName: 'KING',
+    firstName: 'TALHA',
+    lastName: 'BADAR',
+    intro: "Hi, I’m",
+    eyebrow: 'TALHA // DEVELOPER · PK / WORLDWIDE',
     role: 'Mobile Application Developer',
-    taglinePrefix: 'YOU IMAGINE.',
+    taglinePrefix: 'YOU IMAGINE,',
     taglineHighlight: 'I DELIVER',
+    lede: 'Transforming ideas into powerful mobile experiences through Flutter, React, and full-stack development.',
     basePortrait: '/assets/portrait/portrait-base.png',
     cyberPortrait: '/assets/portrait/portrait-cyber.png',
     circuitNodes: [
@@ -25,7 +28,7 @@ export const portfolioConfig: PortfolioConfig = {
     ],
   },
   profile: {
-    greeting: "I'm Martin King",
+    greeting: "I'm Talha Badar",
     bioTitle: 'Mobile Application Developer',
     bioParagraphs: [
       "I'm a Mobile Application Developer who turns ideas into polished, dependable products. I build mobile and full-stack experiences that feel simple to use, solve real problems, and remain maintainable as they grow.",

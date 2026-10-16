@@ -22,9 +22,9 @@ export function TopNavbar() {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const monogram = portfolioConfig.meta.monogram || 'MK|';
+  const monogram = portfolioConfig.meta.monogram || 'TB';
   const brandPrefix = monogram.endsWith('.') || monogram.endsWith('|') ? monogram.slice(0, -1) : monogram;
-  const brandSuffix = monogram.endsWith('|') ? '|' : monogram.endsWith('.') ? '.' : '';
+  const brandSuffix = monogram.endsWith('|') ? '|' : '.';
 
 
   // Compute theme styles dynamically across sections and project matrix
@@ -120,15 +120,16 @@ export function TopNavbar() {
             >
               {brandPrefix}
             </span>
-            <span
-              className={`inline-block w-[2.2px] h-[19px] ml-[1px] align-middle transition-colors duration-300 ${
-                navStyle.isLight ? 'bg-[#08795A]' : 'bg-[#00E599]'
+            <b
+              className={`font-heading font-black text-2xl transition-colors duration-300 ${
+                navStyle.isLight ? 'text-[#08795A]' : 'text-[#00E599]'
               }`}
               style={{
-                boxShadow: navStyle.isLight ? 'none' : '0 0 8px rgba(0, 229, 153, 0.7)',
+                textShadow: navStyle.isLight ? 'none' : '0 0 10px rgba(0, 229, 153, 0.7)',
               }}
-              aria-hidden="true"
-            />
+            >
+              {brandSuffix}
+            </b>
           </a>
 
           {/* Desktop Nav Items */}

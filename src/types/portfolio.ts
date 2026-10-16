@@ -18,9 +18,12 @@ export interface CircuitCallout {
 export interface HeroConfig {
   firstName: string;
   lastName: string;
+  intro?: string;
+  eyebrow?: string;
   role: string;
   taglinePrefix: string;
   taglineHighlight: string;
+  lede?: string;
   basePortrait: string;
   cyberPortrait?: string | null;
   circuitNodes: CircuitCallout[];

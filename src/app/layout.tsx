@@ -15,19 +15,19 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: 'Martin King - Mobile Application & Full-Stack Developer',
+  title: 'Talha Badar - Mobile Application Developer | Flutter Expert',
   description:
     'Senior Mobile Application Developer specializing in Flutter, React, Firebase, and Full-Stack Development. Creating seamless user experiences for global clients.',
   keywords: [
-    'Martin King',
-    'Mobile Application Developer',
     'Flutter Developer',
-    'React',
-    'Firebase',
-    'PORTFOLIO.OS',
+    'Mobile App Developer',
+    'React Developer',
+    'Firebase Expert',
     'Full Stack Developer',
+    'Talha Badar',
+    'PORTFOLIO.OS',
   ],
-  authors: [{ name: 'Martin King' }],
+  authors: [{ name: 'Talha Badar' }],
 };
 
 export default function RootLayout({

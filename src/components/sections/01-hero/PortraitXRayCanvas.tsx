@@ -157,13 +157,15 @@ export function PortraitXRayCanvas({
     : { opacity: 0 };
 
   return (
-    <div
+    <figure
+      id="hero-reveal"
+      data-cursor="target"
       ref={(el) => {
-        portraitRef.current = el;
-        if (onContainerRef) onContainerRef(el);
+        portraitRef.current = el as HTMLDivElement | null;
+        if (onContainerRef) onContainerRef(el as HTMLDivElement | null);
       }}
       onClick={onToggleLock}
-      className="pointer-events-auto cursor-pointer absolute bottom-0 left-1/2 z-10 flex h-[88vh] w-auto -translate-x-1/2 items-end justify-center select-none flex-shrink-0"
+      className="hero-portrait hero-portrait--reveal scene-copy hero-reveal-ready hero-reveal-active pointer-events-auto cursor-pointer absolute bottom-0 left-1/2 z-10 flex h-[88vh] w-auto -translate-x-1/2 items-end justify-center select-none flex-shrink-0"
       style={{
         WebkitMaskImage:
           'linear-gradient(to right, transparent 0%, #000 12%, #000 88%, transparent 100%)',
@@ -208,6 +210,6 @@ export function PortraitXRayCanvas({
           draggable={false}
         />
       </div>
-    </div>
+    </figure>
   );
 }

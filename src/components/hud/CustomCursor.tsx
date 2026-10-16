@@ -32,7 +32,7 @@ export function CustomCursor() {
       if (!isVisible) setIsVisible(true);
 
       if (dotRef.current) {
-        dotRef.current.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%)`;
+        dotRef.current.style.transform = `translate(${x}px, ${y}px)`;
       }
     };
 
@@ -47,7 +47,7 @@ export function CustomCursor() {
       if (!isVisible) setIsVisible(true);
 
       if (dotRef.current) {
-        dotRef.current.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%)`;
+        dotRef.current.style.transform = `translate(${x}px, ${y}px)`;
       }
     };
 
@@ -59,7 +59,7 @@ export function CustomCursor() {
       setIsTarget(isTargetArea);
 
       const isHoverArea = !isTargetArea && !!target.closest(
-        'a, button, [role="button"], .magnetic, .skill-access li, [data-cursor-hover], [data-skill-cell], .skill-cell, .project-card, [data-hover], .cursor-pointer, input, textarea, select, [tabindex="0"], label'
+        'a, button, [role="button"], .button, .magnetic, .hero-reveal-toggle, .hero-skill-module, .skill-access li, [data-cursor-hover], [data-skill-cell], .skill-cell, .project-card, [data-hover], .cursor-pointer, input, textarea, select, [tabindex="0"], label'
       );
       setIsHover(isHoverArea);
     };
