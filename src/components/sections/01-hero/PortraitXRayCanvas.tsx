@@ -147,23 +147,6 @@ export function PortraitXRayCanvas({
           className="absolute inset-0 h-full w-auto max-w-none object-contain object-bottom select-none"
           draggable={false}
         />
-
-        {/* Interactive Glowing Cyan Lens Ring */}
-        {!isCircuitLocked && isRevealing && activePos && (
-          <div
-            className="pointer-events-none absolute rounded-full"
-            style={{
-              width: '290px',
-              height: '290px',
-              left: `${localX}px`,
-              top: `${localY}px`,
-              transform: 'translate(-50%, -50%)',
-              border: '2px solid rgba(98, 245, 183, 0.75)',
-              boxShadow:
-                '0 0 24px rgba(98, 245, 183, 0.5), inset 0 0 16px rgba(84, 217, 255, 0.35)',
-            }}
-          />
-        )}
       </div>
     </div>
   );
