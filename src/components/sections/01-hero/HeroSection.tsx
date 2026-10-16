@@ -394,82 +394,73 @@ export function HeroSection({ data }: HeroSectionProps) {
         })}
       </svg>
 
-      {/* Left Column: Reference DOM Scene Copy */}
-      <div className="hero__copy scene-copy absolute left-[clamp(1.5rem,4.5vw,5rem)] top-[50%] -translate-y-1/2 z-20 pointer-events-auto flex flex-col items-start">
-        {/* System Pill */}
-        <div className="system-pill reveal-line">
-          <i />
-          <span>AVAILABLE FOR OPPORTUNITIES</span>
-          <b>ONLINE</b>
-        </div>
-
-        {/* Eyebrow */}
-        <p className="eyebrow reveal-line">
-          {data.eyebrow || `${data.firstName} // DEVELOPER · PK / WORLDWIDE`}
-        </p>
-
-        {/* Hero Title with Intro + Split Name */}
-        <h1 id="hero-title" className="hero__title select-none">
-          <span className="intro reveal-line">Hi, I’m</span>
-          <span className="name split-text">
-            {data.firstName.split('').map((char, i) => (
-              <span key={`char-fn-${i}`} className="char">
-                {char}
-              </span>
-            ))}
-          </span>
-          <span className="name name--outline split-text">
-            {data.lastName.split('').map((char, i) => (
-              <span key={`char-ln-${i}`} className="char">
-                {char}
-              </span>
-            ))}
-          </span>
+      {/* Left Column: Focused Hero Display Typography (Matching Picture 2) */}
+      <div className="absolute left-[clamp(2rem,5vw,5.5rem)] top-[50%] -translate-y-1/2 z-20 flex flex-col items-start pointer-events-auto select-none">
+        {/* Giant solid white first name with subtle bottom inner shadow */}
+        <h1
+          className="font-heading font-black select-none m-0 p-0 text-white tracking-[-0.04em] leading-[0.84]"
+          style={{
+            fontSize: 'clamp(4.5rem, 8.8vw, 9.2rem)',
+            textShadow: '0 8px 24px rgba(0,0,0,0.6)',
+          }}
+        >
+          {data.firstName.split('').map((char, i) => (
+            <span
+              key={`char-fn-${i}`}
+              className="char inline-block transition-transform duration-300 hover:-translate-y-1 hover:-rotate-1 hover:text-[#62f5b7]"
+            >
+              {char}
+            </span>
+          ))}
         </h1>
 
-        {/* Role Pill */}
-        <div className="role reveal-line">
-          <span>01</span>
-          <h2>{data.role || 'Mobile Application Developer'}</h2>
+        {/* Giant double-wireframe outlined last name tightly stacked underneath */}
+        <div className="relative select-none" style={{ marginTop: '-0.04em' }}>
+          <span
+            className="font-heading font-black block select-none pointer-events-none stroke-text tracking-[-0.04em] leading-[0.84]"
+            style={{
+              fontSize: 'clamp(4.5rem, 8.8vw, 9.2rem)',
+            }}
+          >
+            {data.lastName.split('').map((char, i) => (
+              <span
+                key={`char-ln-${i}`}
+                className="char inline-block transition-transform duration-300 hover:-translate-y-1 hover:-rotate-1 hover:text-[#62f5b7]"
+              >
+                {char}
+              </span>
+            ))}
+          </span>
         </div>
 
-        {/* Tagline */}
-        <p className="hero__tagline reveal-line">
-          {data.taglinePrefix || 'YOU IMAGINE,'} <span>{data.taglineHighlight || 'I DELIVER'}</span>
-        </p>
-
-        {/* Lede paragraph */}
-        <p className="hero__lede reveal-line">
-          {data.lede ||
-            'Transforming ideas into powerful mobile experiences through Flutter, React, and full-stack development.'}
-        </p>
-
-        {/* Hero Actions (Primary Button + Ghost Button) */}
-        <div className="hero__actions reveal-line">
-          <a className="button button--primary magnetic" href="#contact">
-            <i />
-            <span>
-              <small>AVAILABLE FOR OPPORTUNITIES</small>
-              Hire Me
-            </span>
-            <b>↗</b>
-          </a>
-          <a className="button button--ghost magnetic" href="#portfolio">
-            View my work <b>↓</b>
-          </a>
+        {/* Horizontal 24px emerald line + Mobile Application Developer */}
+        <div className="mt-8 flex items-center gap-3">
+          <div
+            style={{
+              width: '24px',
+              height: '1.5px',
+              backgroundColor: '#10B981',
+              flexShrink: 0,
+            }}
+          />
+          <span
+            className="font-sans text-white text-[18px] sm:text-[19px] font-normal"
+            style={{ letterSpacing: '0.01em' }}
+          >
+            {data.role || 'Mobile Application Developer'}
+          </span>
         </div>
 
-        {/* Hero Meta Metrics */}
-        <div className="hero__meta reveal-line">
-          <span>
-            <b>04+</b> Years experience
-          </span>
-          <span>
-            <b>50+</b> Projects delivered
-          </span>
-          <span>
-            <b>99%</b> Client satisfaction
-          </span>
+        {/* Indented Tagline: YOU IMAGINE, I DELIVER */}
+        <div
+          className="mt-2 font-mono-hud text-[10px] sm:text-[10.5px] uppercase font-medium flex items-center gap-1.5"
+          style={{
+            paddingLeft: '36px',
+            letterSpacing: '0.24em',
+          }}
+        >
+          <span style={{ color: '#52635B' }}>{data.taglinePrefix || 'YOU IMAGINE,'}</span>{' '}
+          <span style={{ color: '#10B981' }}>{data.taglineHighlight || 'I DELIVER'}</span>
         </div>
       </div>
 
@@ -485,30 +476,71 @@ export function HeroSection({ data }: HeroSectionProps) {
         }}
       />
 
-      {/* Bottom Center: Reference DOM Controls */}
-      <figcaption
-        className="hero-reveal-controls select-none pointer-events-auto"
+      {/* Bottom Center: Control Bar (Matching Picture 2) */}
+      <div
+        className="absolute z-30 flex items-center gap-3.5 select-none pointer-events-auto"
+        style={{
+          bottom: '28px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+        }}
         onClick={(e) => e.stopPropagation()}
       >
-        <span className="hero-reveal-status">
+        {/* Left: vertical 16px emerald line */}
+        <div
+          style={{
+            width: '1px',
+            height: '16px',
+            backgroundColor: '#10B981',
+            flexShrink: 0,
+          }}
+        />
+
+        {/* Center: Monospace instruction label */}
+        <span
+          className="font-mono-hud whitespace-nowrap"
+          style={{
+            fontSize: '9.5px',
+            letterSpacing: '0.16em',
+            color: 'rgba(255, 255, 255, 0.6)',
+          }}
+        >
           {isCircuitLocked ? 'CIRCUIT VIEW · ESC TO RETURN' : 'MOVE TO REVEAL · CLICK TO LOCK'}
         </span>
+
+        {/* Right: Rounded pill button */}
         <button
           type="button"
           onClick={() => toggleCircuitLock()}
-          aria-pressed={isCircuitLocked}
-          aria-label="Toggle circuit view; press Escape to return to scrolling"
-          className={`hero-reveal-toggle magnetic ${isCircuitLocked ? 'is-locked' : ''}`}
+          className="transition-all duration-300 font-mono-hud whitespace-nowrap cursor-pointer flex items-center gap-1.5"
+          style={
+            isCircuitLocked
+              ? {
+                  borderRadius: '9999px',
+                  background: '#62f5b7',
+                  color: '#02120b',
+                  fontWeight: 600,
+                  padding: '6px 16px',
+                  fontSize: '11px',
+                  boxShadow: '0 0 20px rgba(98, 245, 183, 0.45)',
+                  border: 'none',
+                }
+              : {
+                  borderRadius: '9999px',
+                  border: '1px solid rgba(16, 185, 129, 0.4)',
+                  backgroundColor: 'rgba(5, 16, 11, 0.8)',
+                  padding: '6px 16px',
+                  fontSize: '11px',
+                  color: '#A7F3D0',
+                }
+          }
         >
-          {isCircuitLocked ? 'Back to scroll ✕' : 'Lock circuit view ↗'}
+          {isCircuitLocked && (
+            <span className="w-1.5 h-1.5 rounded-full bg-[#02120b] animate-pulse" />
+          )}
+          <span>{isCircuitLocked ? 'Back to scroll ✕' : 'Lock circuit view ↗'}</span>
         </button>
-      </figcaption>
-
-      {/* Scroll Cue at Bottom */}
-      <a className="scroll-cue" href="#about">
-        <span>Scroll to enter system</span>
-        <i />
-      </a>
+      </div>
 
       {/* Right Column: 5 Proximity-Illuminated Circuit Callout Nodes */}
       <div className="absolute right-[5vw] top-[50%] -translate-y-1/2 z-20 pointer-events-auto">

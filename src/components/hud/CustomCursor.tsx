@@ -23,6 +23,24 @@ export function CustomCursor() {
     document.documentElement.classList.add('custom-cursor-active');
     document.body.classList.add('custom-cursor-active');
 
+    const initialX = Math.round(window.innerWidth * 0.78);
+    const initialY = Math.round(window.innerHeight * 0.78);
+    mousePos.current = { x: initialX, y: initialY };
+    ringPos.current = { x: initialX, y: initialY };
+    setIsVisible(true);
+
+    if (dotRef.current) {
+      dotRef.current.style.transform = `translate(${initialX}px, ${initialY}px)`;
+    }
+    if (ringRef.current) {
+      ringRef.current.style.transform = `translate(${initialX}px, ${initialY}px) translate(-50%, -50%)`;
+    }
+
+    const coordEl = document.getElementById('coordinates');
+    if (coordEl) {
+      coordEl.textContent = `X ${initialX} / Y ${initialY}`;
+    }
+
     const handlePointerMove = (e: PointerEvent) => {
       hasUserMovedRef.current = true;
       const x = e.clientX;
@@ -33,6 +51,10 @@ export function CustomCursor() {
 
       if (dotRef.current) {
         dotRef.current.style.transform = `translate(${x}px, ${y}px)`;
+      }
+
+      if (coordEl) {
+        coordEl.textContent = `X ${Math.round(x)} / Y ${Math.round(y)}`;
       }
     };
 
