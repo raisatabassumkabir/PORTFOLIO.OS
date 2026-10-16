@@ -71,7 +71,8 @@ export function PortraitXRayCanvas({
       const rect = portraitRef.current.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
-      if (x >= -150 && x <= rect.width + 150 && y >= -150 && y <= rect.height + 150) {
+      // Track reveal exclusively when cursor is over or directly brushing the portrait
+      if (x >= -40 && x <= rect.width + 40 && y >= -40 && y <= rect.height + 40) {
         addTrailPoint(x, y);
       } else {
         lastPosRef.current = null;
@@ -187,26 +188,9 @@ export function PortraitXRayCanvas({
               ? 'opacity-80 bg-[#00E599]/35 scale-105'
               : trail.length > 0 || isHoveringHero
               ? 'opacity-40 bg-[#10B981]/25 scale-100'
-              : 'opacity-25 bg-[#082824]/60 scale-95'
+              : 'opacity-25 bg-[#10B981]/15 scale-95'
           }`}
         />
-
-        {/* Ambient Emerald Fluid Ribbon Trail behind bust */}
-        {!isCircuitLocked && trail.length > 1 && (
-          <svg
-            className="pointer-events-none absolute inset-0 w-full h-full overflow-visible"
-            style={{ filter: 'blur(35px)' }}
-          >
-            <path
-              d={`M ${trail[0].x} ${trail[0].y} ` + trail.slice(1).map((p) => `L ${p.x} ${p.y}`).join(' ')}
-              fill="none"
-              stroke="rgba(16, 185, 129, 0.22)"
-              strokeWidth="150"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        )}
 
         {/* Both base and cyber images fill 100% height and align to bottom center */}
         <img
