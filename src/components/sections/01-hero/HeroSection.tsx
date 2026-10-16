@@ -274,14 +274,18 @@ export function HeroSection({ data }: HeroSectionProps) {
       onMouseLeave={() => {
         if (hasUserInteractedRef.current) setIsHoveringHero(false);
       }}
-      className="relative h-screen min-h-[700px] w-full flex items-center justify-between bg-[#040A07] overflow-hidden select-none scroll-mt-16 pointer-events-auto"
+      className="relative h-screen min-h-[700px] w-full flex items-center justify-between overflow-hidden select-none scroll-mt-16 pointer-events-auto"
+      style={{
+        background:
+          'radial-gradient(ellipse 70% 65% at 50% 48%, #082824 0%, #041714 38%, #020907 70%, #010403 100%), #010403',
+      }}
     >
       {/* Soft ambient radial emerald glow behind portrait */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            'radial-gradient(circle at 50% 45%, rgba(16, 185, 129, 0.09) 0%, rgba(4, 10, 7, 0) 65%)',
+            'radial-gradient(ellipse 60% 55% at 50% 45%, rgba(10, 48, 42, 0.45) 0%, rgba(2, 9, 7, 0) 75%)',
         }}
       />
 
@@ -298,7 +302,7 @@ export function HeroSection({ data }: HeroSectionProps) {
             <g
               key={line.id}
               style={{
-                opacity: isCircuitLocked ? 1 : isHighLit ? Math.max(0.65, proximity) : 0.08,
+                opacity: isCircuitLocked ? 1 : isHighLit ? Math.max(0.75, proximity) : 0.35,
                 transition: 'opacity 0.25s ease',
               }}
             >
@@ -307,21 +311,44 @@ export function HeroSection({ data }: HeroSectionProps) {
               <polyline
                 points={`${line.startX},${line.startY} ${line.midX1},${line.startY} ${line.midX2},${line.endY} ${line.boxLeftX},${line.endY}`}
                 fill="none"
-                stroke={isHighLit ? '#34D399' : 'rgba(16, 185, 129, 0.2)'}
-                strokeWidth={isHighLit ? 1.5 : 0.75}
+                stroke={isHighLit ? '#00E599' : 'rgba(98, 245, 183, 0.28)'}
+                strokeWidth={isHighLit ? 1.5 : 1}
               />
 
-              {/* Start anchor circle on portrait - strictly invisible (opacity 0, radius 0) when resting */}
+              {/* Start anchor circle on portrait */}
               <circle
                 cx={line.startX}
                 cy={line.startY}
-                r={isHighLit ? 2.5 : 0}
-                fill="#34D399"
+                r={isHighLit ? 3.5 : 2}
+                fill={isHighLit ? '#FFFFFF' : 'rgba(98, 245, 183, 0.45)'}
                 style={{
-                  opacity: isHighLit ? 1 : 0,
-                  transition: 'opacity 0.25s ease, r 0.25s ease',
+                  transition: 'r 0.25s ease, fill 0.25s ease',
                 }}
-                className={isHighLit ? 'drop-shadow-[0_0_8px_#34D399]' : ''}
+                className={isHighLit ? 'drop-shadow-[0_0_8px_#00E599]' : ''}
+              />
+
+              {/* Elbow node circle */}
+              <circle
+                cx={line.midX1}
+                cy={line.startY}
+                r={isHighLit ? 2.5 : 1.8}
+                fill={isHighLit ? '#FFFFFF' : 'rgba(98, 245, 183, 0.35)'}
+                style={{
+                  transition: 'r 0.25s ease, fill 0.25s ease',
+                }}
+                className={isHighLit ? 'drop-shadow-[0_0_6px_#00E599]' : ''}
+              />
+
+              {/* Card connection node circle */}
+              <circle
+                cx={line.boxLeftX}
+                cy={line.endY}
+                r={isHighLit ? 3 : 2}
+                fill={isHighLit ? '#00E599' : 'rgba(98, 245, 183, 0.4)'}
+                style={{
+                  transition: 'r 0.25s ease, fill 0.25s ease',
+                }}
+                className={isHighLit ? 'drop-shadow-[0_0_6px_#00E599]' : ''}
               />
             </g>
           );
@@ -436,17 +463,17 @@ export function HeroSection({ data }: HeroSectionProps) {
         {/* Right: Rounded pill button */}
         <button
           onClick={() => toggleCircuitLock()}
-          className="transition-all duration-300 font-mono-hud whitespace-nowrap cursor-pointer"
+          className="transition-all duration-300 font-mono-hud whitespace-nowrap cursor-pointer flex items-center gap-1.5"
           style={
             isCircuitLocked
               ? {
                   borderRadius: '9999px',
-                  background: '#5EEAD4',
-                  color: '#04120B',
+                  background: '#62f5b7',
+                  color: '#02120b',
                   fontWeight: 600,
                   padding: '6px 16px',
                   fontSize: '11px',
-                  boxShadow: '0 0 20px rgba(74, 222, 128, 0.4)',
+                  boxShadow: '0 0 20px rgba(98, 245, 183, 0.45)',
                   border: 'none',
                 }
               : {
@@ -459,7 +486,10 @@ export function HeroSection({ data }: HeroSectionProps) {
                 }
           }
         >
-          {isCircuitLocked ? 'Back to scroll ✓' : 'Lock circuit view ↗'}
+          {isCircuitLocked && (
+            <span className="w-1.5 h-1.5 rounded-full bg-[#02120b] animate-pulse" />
+          )}
+          <span>{isCircuitLocked ? 'Back to scroll ✕' : 'Lock circuit view ↗'}</span>
         </button>
       </div>
 

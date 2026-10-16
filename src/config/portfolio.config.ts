@@ -17,11 +17,11 @@ export const portfolioConfig: PortfolioConfig = {
     basePortrait: '/assets/portrait/portrait-base.png',
     cyberPortrait: '/assets/portrait/portrait-cyber.png',
     circuitNodes: [
-      { id: 'ai', code: 'AI', title: 'AI / ML', subtitle: 'INTELLIGENT SYSTEMS', anchorX: 58, anchorY: 34 },
-      { id: 'api', code: 'API', title: 'BACKEND', subtitle: 'SCALABLE SERVICES', anchorX: 59, anchorY: 44 },
-      { id: 'app', code: 'APP', title: 'MOBILE', subtitle: 'FLUTTER EXPERIENCES', anchorX: 62, anchorY: 55 },
-      { id: 'cld', code: 'CLD', title: 'CLOUD', subtitle: 'DEPLOYED INFRA', anchorX: 64, anchorY: 65 },
-      { id: 'sec', code: 'SEC', title: 'SECURITY', subtitle: 'PROTECTED DATA', anchorX: 61, anchorY: 76 },
+      { id: 'ai', code: 'AI', title: 'AI / ML', subtitle: 'INTELLIGENT SYSTEMS', anchorX: 58, anchorY: 31 },
+      { id: 'api', code: 'API', title: 'BACKEND', subtitle: 'SCALABLE SERVICES', anchorX: 59, anchorY: 41 },
+      { id: 'app', code: 'APP', title: 'MOBILE', subtitle: 'FLUTTER EXPERIENCES', anchorX: 52, anchorY: 52 },
+      { id: 'cld', code: 'CLD', title: 'CLOUD', subtitle: 'DEPLOYED INFRA', anchorX: 54, anchorY: 63 },
+      { id: 'sec', code: 'SEC', title: 'SECURITY', subtitle: 'PROTECTED DATA', anchorX: 50, anchorY: 74 },
     ],
   },
   profile: {

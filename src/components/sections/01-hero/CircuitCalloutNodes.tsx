@@ -55,14 +55,14 @@ export function CircuitCalloutNodes({
               width: '210px',
               padding: '11px 16px',
               borderRadius: '0px',
-              opacity: proximity,
+              opacity: isLocked ? 1 : isLit ? 1 : Math.max(0.45, proximity),
               transition:
-                'opacity 0.15s ease, background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease',
+                'opacity 0.25s ease, background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease',
             }}
-            className={`relative group cursor-pointer border select-none pointer-events-auto backdrop-blur-[4px] ${
+            className={`relative group cursor-pointer border select-none pointer-events-auto backdrop-blur-[6px] ${
               isLit
-                ? 'bg-[#040E0A]/95 border-[#10B981]/70 shadow-[0_0_20px_rgba(16,185,129,0.2)] translate-x-1'
-                : 'bg-[#040A07]/50 border-[#10B981]/20 hover:border-[#10B981]/50 hover:bg-[#040E0A]/75'
+                ? 'bg-[rgba(3,18,14,0.92)] border-[#00E599] shadow-[0_0_22px_rgba(0,229,153,0.28)] translate-x-1'
+                : 'bg-[rgba(2,10,8,0.45)] border-[rgba(16,185,129,0.18)] hover:border-[#00E599]/60 hover:bg-[rgba(3,18,14,0.75)]'
             }`}
           >
             <div className="flex items-center gap-3">
@@ -70,8 +70,8 @@ export function CircuitCalloutNodes({
               <span
                 className={`font-mono-hud text-[10px] tracking-wider flex-shrink-0 w-7 transition-colors duration-200 ${
                   isLit
-                    ? 'text-[#34D399] font-bold drop-shadow-[0_0_8px_#34D399]'
-                    : 'text-[#10B981]/80 font-medium group-hover:text-[#34D399]'
+                    ? 'text-[#00E599] font-bold drop-shadow-[0_0_8px_#00E599]'
+                    : 'text-[#10B981]/70 font-medium group-hover:text-[#00E599]'
                 }`}
               >
                 {node.code}
@@ -82,8 +82,8 @@ export function CircuitCalloutNodes({
                 <span
                   className={`font-mono-hud text-[13px] font-bold tracking-wider uppercase transition-colors duration-200 truncate ${
                     isLit
-                      ? 'text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.45)]'
-                      : 'text-[#E5ECE8] group-hover:text-white'
+                      ? 'text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.6)]'
+                      : 'text-[#A5BDB4] group-hover:text-white'
                   }`}
                 >
                   {node.title}
@@ -91,8 +91,8 @@ export function CircuitCalloutNodes({
                 <span
                   className={`font-mono-hud text-[9px] tracking-widest uppercase transition-colors duration-200 truncate mt-0.5 ${
                     isLit
-                      ? 'text-[#10B981] font-semibold'
-                      : 'text-[#52635B] group-hover:text-[#8AA397]'
+                      ? 'text-[#5EEAD4] font-semibold'
+                      : 'text-[#5A736A] group-hover:text-[#8AA49B]'
                   }`}
                 >
                   {node.subtitle}

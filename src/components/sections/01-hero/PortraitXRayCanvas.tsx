@@ -103,7 +103,7 @@ export function PortraitXRayCanvas({
         if (onContainerRef) onContainerRef(el);
       }}
       onClick={onToggleLock}
-      className="pointer-events-auto cursor-pointer absolute bottom-0 left-1/2 z-10 flex h-[86vh] w-auto -translate-x-1/2 items-end justify-center select-none flex-shrink-0"
+      className="pointer-events-auto cursor-pointer absolute bottom-0 left-1/2 z-10 flex h-[88vh] w-auto -translate-x-1/2 items-end justify-center select-none flex-shrink-0"
       style={{
         WebkitMaskImage:
           'linear-gradient(to right, transparent 0%, #000 12%, #000 88%, transparent 100%)',
@@ -125,10 +125,10 @@ export function PortraitXRayCanvas({
         <div
           className={`absolute inset-0 rounded-full blur-[100px] transition-all duration-700 pointer-events-none ${
             isCircuitLocked
-              ? 'opacity-70 bg-[#00E599]/30 scale-105'
+              ? 'opacity-80 bg-[#00E599]/35 scale-105'
               : isHoveringHero || isTeaserActive
-              ? 'opacity-35 bg-[#10B981]/20 scale-100'
-              : 'opacity-20 bg-[#10B981]/15 scale-95'
+              ? 'opacity-40 bg-[#10B981]/25 scale-100'
+              : 'opacity-25 bg-[#082824]/60 scale-95'
           }`}
         />
 
@@ -147,6 +147,23 @@ export function PortraitXRayCanvas({
           className="absolute inset-0 h-full w-auto max-w-none object-contain object-bottom select-none"
           draggable={false}
         />
+
+        {/* Interactive Glowing Cyan Lens Ring */}
+        {!isCircuitLocked && isRevealing && activePos && (
+          <div
+            className="pointer-events-none absolute rounded-full"
+            style={{
+              width: '290px',
+              height: '290px',
+              left: `${localX}px`,
+              top: `${localY}px`,
+              transform: 'translate(-50%, -50%)',
+              border: '2px solid rgba(98, 245, 183, 0.75)',
+              boxShadow:
+                '0 0 24px rgba(98, 245, 183, 0.5), inset 0 0 16px rgba(84, 217, 255, 0.35)',
+            }}
+          />
+        )}
       </div>
     </div>
   );

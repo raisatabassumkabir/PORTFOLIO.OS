@@ -89,18 +89,24 @@ export function TopNavbar() {
   return (
     <>
       <header
-        className={`fixed top-3 sm:top-5 left-3 sm:left-7 lg:left-9 right-3 sm:right-7 lg:right-9 z-[70] h-16 transition-colors duration-500 pointer-events-auto backdrop-blur-md border ${
-          navStyle.isLight
-            ? 'bg-[#F4F6F5]/90 border-[#D8E2DC] text-[#0A1410]'
-            : activeSection === 1
-            ? 'bg-[#020706]/75 border-[rgba(117,255,213,0.18)] text-white'
-            : activeSection === 6
-            ? 'bg-[#101610]/90 border-[#C8FF00]/40 text-white'
-            : 'bg-[#020706]/80 border-[rgba(117,255,213,0.18)] text-[#F1F5F9]'
+        className={`fixed z-[70] transition-all duration-500 pointer-events-auto ${
+          activeSection === 1
+            ? 'top-0 left-0 right-0 h-16 sm:h-20 bg-transparent border-transparent'
+            : `top-3 sm:top-5 left-3 sm:left-7 lg:left-9 right-3 sm:right-7 lg:right-9 h-16 backdrop-blur-md border ${
+                navStyle.isLight
+                  ? 'bg-[#F4F6F5]/90 border-[#D8E2DC] text-[#0A1410]'
+                  : activeSection === 6
+                  ? 'bg-[#101610]/90 border-[#C8FF00]/40 text-white'
+                  : 'bg-[#020706]/80 border-[rgba(117,255,213,0.18)] text-[#F1F5F9]'
+              }`
         }`}
       >
-        <div className="w-full h-full px-4 sm:px-6 lg:px-8 flex items-center justify-between pointer-events-auto relative">
-          {/* Top-left Brand Monogram: TB with tightly hugging green cursor bar */}
+        <div
+          className={`w-full h-full flex items-center justify-between pointer-events-auto relative ${
+            activeSection === 1 ? 'px-6 sm:px-12 lg:px-16' : 'px-4 sm:px-6 lg:px-8'
+          }`}
+        >
+          {/* Top-left Brand Monogram: TB / MK with green accent */}
           <a
             href="#home"
             onClick={(e) => handleNavClick(e, 1)}
@@ -116,17 +122,17 @@ export function TopNavbar() {
             </span>
             <span
               className={`inline-block w-[2.2px] h-[19px] ml-[1px] align-middle transition-colors duration-300 ${
-                navStyle.isLight ? 'bg-[#08795A]' : 'bg-[#10B981]'
+                navStyle.isLight ? 'bg-[#08795A]' : 'bg-[#00E599]'
               }`}
               style={{
-                boxShadow: navStyle.isLight ? 'none' : '0 0 8px rgba(16, 185, 129, 0.5)',
+                boxShadow: navStyle.isLight ? 'none' : '0 0 8px rgba(0, 229, 153, 0.7)',
               }}
               aria-hidden="true"
             />
           </a>
 
           {/* Desktop Nav Items */}
-          <nav className="hidden md:flex items-center space-x-7 lg:space-x-8 pointer-events-auto">
+          <nav className="hidden md:flex items-center space-x-7 lg:space-x-9 pointer-events-auto">
             {navItems.map((item) => {
               const isActive = activeSection === item.index;
               return (
@@ -141,15 +147,18 @@ export function TopNavbar() {
                         : 'text-white font-semibold'
                       : navStyle.isLight
                       ? 'text-[#6E847D] hover:text-[#0A1410]'
-                      : 'text-white/40 hover:text-white/80'
+                      : 'text-[#759087] hover:text-white'
                   }`}
                 >
                   {item.label}
                   {isActive && (
                     <span
-                      className={`absolute -bottom-2 left-0 right-0 h-[1.5px] ${
-                        navStyle.isLight ? 'bg-[#08795A]' : 'bg-[#10B981]'
+                      className={`absolute -bottom-1.5 left-0 right-0 h-[2px] ${
+                        navStyle.isLight ? 'bg-[#08795A]' : 'bg-[#00E599]'
                       }`}
+                      style={{
+                        boxShadow: navStyle.isLight ? 'none' : '0 0 6px rgba(0, 229, 153, 0.6)',
+                      }}
                     />
                   )}
                 </a>
@@ -161,13 +170,17 @@ export function TopNavbar() {
           <div className="flex items-center gap-4 pointer-events-auto">
             <button
               onClick={openBriefModal}
-              className={`group flex items-center gap-2.5 px-2 py-1 font-mono-hud text-[11px] tracking-[0.2em] transition-colors duration-200 cursor-pointer pointer-events-auto ${
-                navStyle.isLight ? 'text-[#0A1410] hover:text-[#08795A]' : 'text-[#D1D5DB] hover:text-white'
+              className={`group flex items-center gap-2.5 px-3 py-1.5 font-mono-hud text-[11px] tracking-[0.2em] transition-all duration-200 cursor-pointer pointer-events-auto ${
+                activeSection === 1
+                  ? 'text-white border border-[rgba(16,185,129,0.25)] bg-[rgba(7,19,18,0.45)] hover:border-[#00E599] hover:bg-[#00E599]/10'
+                  : navStyle.isLight
+                  ? 'text-[#0A1410] hover:text-[#08795A]'
+                  : 'text-[#D1D5DB] hover:text-white'
               }`}
             >
               <span
                 className={`w-[6px] h-[6px] rounded-full flex-shrink-0 ${
-                  navStyle.isLight ? 'bg-[#08795A]' : 'bg-[#10B981] shadow-[0_0_8px_#10B981]'
+                  navStyle.isLight ? 'bg-[#08795A]' : 'bg-[#00E599] shadow-[0_0_8px_#00E599]'
                 }`}
               />
               <span>LET&apos;S CONNECT</span>
