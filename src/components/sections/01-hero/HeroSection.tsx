@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { HeroConfig } from '@/types/portfolio';
 import { PortraitXRayCanvas } from './PortraitXRayCanvas';
 import { CircuitCalloutNodes } from './CircuitCalloutNodes';
@@ -10,38 +10,84 @@ interface HeroSectionProps {
   data: HeroConfig;
 }
 
-interface ConnectorLine {
+interface SkillNodeConfig {
   id: string;
-  startX: number;
-  startY: number;
-  midX1: number;
-  midX2: number;
-  boxLeftX: number;
-  endY: number;
+  code: string;
+  title: string;
+  subtitle: string;
+  top: string;
+  node: [number, number]; // [u, v] where u is x fraction, v is 1 - y fraction
+  offset: number;
+}
+
+interface RenderedLine {
+  id: string;
+  pathD: string;
+  start: { x: number; y: number };
+  pulse: { x: number; y: number };
+  activation: number;
+}
+
+// Exact skill definitions and node coordinates from talhadevelops.vercel.app (config.js)
+const SKILL_NODES: SkillNodeConfig[] = [
+  { id: 'ai', code: 'AI', title: 'AI / ML', subtitle: 'INTELLIGENT SYSTEMS', top: '25%', node: [0.585, 0.69], offset: 0 * 0.173 },
+  { id: 'api', code: 'API', title: 'BACKEND', subtitle: 'SCALABLE SERVICES', top: '36.5%', node: [0.61, 0.59], offset: 1 * 0.173 },
+  { id: 'app', code: 'APP', title: 'MOBILE', subtitle: 'FLUTTER EXPERIENCES', top: '48%', node: [0.625, 0.48], offset: 2 * 0.173 },
+  { id: 'cld', code: 'CLD', title: 'CLOUD', subtitle: 'DEPLOYED INFRA', top: '59.5%', node: [0.64, 0.37], offset: 3 * 0.173 },
+  { id: 'sec', code: 'SEC', title: 'SECURITY', subtitle: 'PROTECTED DATA', top: '71%', node: [0.62, 0.25], offset: 4 * 0.173 },
+];
+
+// Exact polyline traversal function from deployed SkillModules.js
+function pointOnPolyline(points: { x: number; y: number }[], progress: number) {
+  const lengths: number[] = [];
+  let total = 0;
+  for (let i = 1; i < points.length; i++) {
+    const length = Math.hypot(points[i].x - points[i - 1].x, points[i].y - points[i - 1].y);
+    lengths.push(length);
+    total += length;
+  }
+  let distance = (progress % 1) * total;
+  for (let i = 0; i < lengths.length; i++) {
+    if (distance <= lengths[i]) {
+      const t = lengths[i] ? distance / lengths[i] : 0;
+      return {
+        x: points[i].x + (points[i + 1].x - points[i].x) * t,
+        y: points[i].y + (points[i + 1].y - points[i].y) * t,
+      };
+    }
+    distance -= lengths[i];
+  }
+  return points[points.length - 1] || { x: 0, y: 0 };
 }
 
 export function HeroSection({ data }: HeroSectionProps) {
-  const [activeHoveredNode, setActiveHoveredNode] = useState<string | null>(null);
-  const [isHoveringHero, setIsHoveringHero] = useState(false);
-
-  // Autonomous Animation State Machine
-  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
-  const isAutoPlayingRef = useRef(true);
-  const [pointerPos, setPointerPos] = useState({ x: 0, y: 0 });
-
-  // Lerped smooth positions for proximity calculation and circuit node illumination
-  const smoothPosRef = useRef({ x: 700, y: 350 });
-  const [smoothPos, setSmoothPos] = useState({ x: 700, y: 350 });
-
   const isCircuitLocked = useHudStore((s) => s.isCircuitLocked);
   const toggleCircuitLock = useHudStore((s) => s.toggleCircuitLock);
 
   const heroRef = useRef<HTMLDivElement | null>(null);
-  const containerRef = heroRef; // Alias for backward compatibility
   const portraitRef = useRef<HTMLDivElement | null>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  const [lines, setLines] = useState<ConnectorLine[]>([]);
+  const [linesData, setLinesData] = useState<RenderedLine[]>([]);
+  const [proximities, setProximities] = useState<number[]>([0.08, 0.08, 0.08, 0.08, 0.08]);
+  const [pointerPos, setPointerPos] = useState({ x: 600, y: 350 });
+  const [isHoveringHero, setIsHoveringHero] = useState(false);
+
+  // Timing constants from deployed HERO_CONFIG.idle
+  const returnDelay = 2.5; // 2.5s inactivity before idle starts
+  const idleDuration = 2.5; // 2.5s duration for Lissajous sweep
+  const idleCycle = 7.0; // 7.0s full cycle
+
+  // On page load, start idle sweep immediately (inactive = returnDelay)
+  const lastMeaningfulRef = useRef<number>(performance.now() - returnDelay * 1000);
+  const currentPosRef = useRef({ x: 600, y: 350 });
+  const userMousePosRef = useRef({ x: 600, y: 350 });
+  const isUserInteractingRef = useRef(false);
+  const isIdleRunningRef = useRef(true);
+  const timeRef = useRef(0);
+  const previousTimeRef = useRef(performance.now());
+  const activationsRef = useRef<number[]>([0.08, 0.08, 0.08, 0.08, 0.08]);
+  const activeHoveredNodeRef = useRef<string | null>(null);
 
   // Keyboard shortcut: ESC exits locked circuit view
   useEffect(() => {
@@ -54,241 +100,179 @@ export function HeroSection({ data }: HeroSectionProps) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isCircuitLocked, toggleCircuitLock]);
 
-  // 3. Auto-Play Landing Animation Sequence (4.5s sequence on mount through Waypoints A, B, and C)
+  // Master Unified Animation & Interaction Loop (Matching HeroScene.js and SkillModules.js)
   useEffect(() => {
-    if (isCircuitLocked) return;
-
     let animId: number;
-    let startTime: number | null = null;
-    const totalDuration = 4500; // 4.5s sequence
 
-    const runAutoPlay = (timestamp: number) => {
-      if (!isAutoPlayingRef.current || !heroRef.current) return;
+    const loop = () => {
+      const now = performance.now();
+      const dt = Math.max(0.001, Math.min(0.033, (now - previousTimeRef.current) / 1000));
+      previousTimeRef.current = now;
+      timeRef.current += dt;
 
-      if (!startTime) startTime = timestamp;
-      const elapsed = timestamp - startTime;
-
-      const rect = heroRef.current.getBoundingClientRect();
-      const waypointA = { x: rect.width * 0.52, y: rect.height * 0.38 };
-      const waypointB = { x: rect.width * 0.54, y: rect.height * 0.64 };
-      const waypointC = { x: rect.width * 0.68, y: rect.height * 0.46 };
-
-      let currentX = waypointA.x;
-      let currentY = waypointA.y;
-
-      if (elapsed <= 1400) {
-        // 0.0s – 1.4s: Glide smoothly to Waypoint A (mouth/face). Cybernetic jaw & glasses optics reveal!
-        const startPos = { x: rect.width * 0.48, y: rect.height * 0.26 };
-        const p = Math.min(1, elapsed / 1400);
-        const ease = 0.5 - 0.5 * Math.cos(p * Math.PI);
-        currentX = startPos.x + (waypointA.x - startPos.x) * ease;
-        currentY = startPos.y + (waypointA.y - startPos.y) * ease;
-      } else if (elapsed <= 2800) {
-        // 1.4s – 2.8s: Glide smoothly down to Waypoint B (wrist/watch). Cybernetic watch & arm circuit illuminate!
-        const p = Math.min(1, (elapsed - 1400) / 1400);
-        const ease = 0.5 - 0.5 * Math.cos(p * Math.PI);
-        currentX = waypointA.x + (waypointB.x - waypointA.x) * ease;
-        currentY = waypointA.y + (waypointB.y - waypointA.y) * ease;
-      } else if (elapsed <= 4000) {
-        // 2.8s – 4.0s: Glide out to Waypoint C (right HUD nodes).
-        const p = Math.min(1, (elapsed - 2800) / 1200);
-        const ease = 0.5 - 0.5 * Math.cos(p * Math.PI);
-        currentX = waypointB.x + (waypointC.x - waypointB.x) * ease;
-        currentY = waypointB.y + (waypointC.y - waypointB.y) * ease;
-      } else {
-        // 4.0s+: Smoothly settle to rest
-        currentX = waypointC.x;
-        currentY = waypointC.y;
+      if (!heroRef.current || !portraitRef.current) {
+        animId = requestAnimationFrame(loop);
+        return;
       }
 
-      setPointerPos({ x: Math.round(currentX), y: Math.round(currentY) });
+      const heroRect = heroRef.current.getBoundingClientRect();
+      const portraitRect = portraitRef.current.getBoundingClientRect();
 
-      // Dispatch position for CustomCursor and coordinates HUD
-      window.dispatchEvent(
-        new CustomEvent('hero-teaser-move', {
-          detail: { x: currentX + rect.left, y: currentY + rect.top },
-        })
-      );
+      const inactive = (now - lastMeaningfulRef.current) / 1000;
+      const isIdle = !isCircuitLocked && inactive > returnDelay;
+
+      let targetX = userMousePosRef.current.x;
+      let targetY = userMousePosRef.current.y;
+
+      if (isIdle) {
+        const elapsed = inactive - returnDelay;
+        const cycle = elapsed % idleCycle;
+        if (cycle < idleDuration) {
+          const t = cycle / idleDuration;
+          // Exact 4π / π Lissajous parametric curve from HeroScene.js lines 273-276:
+          // targetPoint.x = 0.5 - Math.cos(t * Math.PI * 4) * 0.32;
+          // targetPoint.y = 0.5 + Math.cos(t * Math.PI) * 0.29; (v=1 is top in WebGL)
+          const targetU = 0.5 - Math.cos(t * Math.PI * 4) * 0.32;
+          const targetV = 0.5 + Math.cos(t * Math.PI) * 0.29;
+          targetX = portraitRect.left - heroRect.left + targetU * portraitRect.width;
+          targetY = portraitRect.top - heroRect.top + (1 - targetV) * portraitRect.height;
+          isIdleRunningRef.current = true;
+        } else {
+          isIdleRunningRef.current = false;
+          targetX = currentPosRef.current.x;
+          targetY = currentPosRef.current.y;
+        }
+      } else {
+        isIdleRunningRef.current = false;
+      }
+
+      // Exact lerp damping formula from HeroScene.js line 288:
+      // step = 1 - Math.exp(-18 * dt)
+      const step = 1 - Math.exp(-18 * dt);
+      currentPosRef.current.x += (targetX - currentPosRef.current.x) * step;
+      currentPosRef.current.y += (targetY - currentPosRef.current.y) * step;
+
+      const currentX = currentPosRef.current.x;
+      const currentY = currentPosRef.current.y;
+
+      // Dispatch teaser move for custom cursor during autonomous sweep
+      if (isIdleRunningRef.current) {
+        window.dispatchEvent(
+          new CustomEvent('hero-teaser-move', {
+            detail: { x: currentX + heroRect.left, y: currentY + heroRect.top },
+          })
+        );
+      }
 
       const coordEl = document.getElementById('coordinates');
       if (coordEl) {
-        coordEl.textContent = `X ${Math.round(currentX + rect.left)} / Y ${Math.round(currentY + rect.top)}`;
+        coordEl.textContent = `X ${String(Math.round(currentX + heroRect.left)).padStart(3, '0')} / Y ${String(Math.round(currentY + heroRect.top)).padStart(3, '0')}`;
       }
 
-      if (elapsed < totalDuration && isAutoPlayingRef.current) {
-        animId = requestAnimationFrame(runAutoPlay);
-      } else {
-        isAutoPlayingRef.current = false;
-        setIsAutoPlaying(false);
-      }
+      // Calculate 3-segment polylines, proximity, activations, and traveling pulse dots
+      const nextLines: RenderedLine[] = [];
+      const nextProximities: number[] = [];
+
+      SKILL_NODES.forEach((skill, index) => {
+        const start = {
+          x: portraitRect.left - heroRect.left + skill.node[0] * portraitRect.width,
+          y: portraitRect.top - heroRect.top + (1 - skill.node[1]) * portraitRect.height,
+        };
+
+        const cardEl = cardRefs.current[index];
+        let endX = heroRect.width - 160;
+        let endY = heroRect.height * (0.25 + index * 0.115);
+
+        if (cardEl) {
+          const cardRect = cardEl.getBoundingClientRect();
+          endX = cardRect.left - heroRect.left;
+          endY = cardRect.top - heroRect.top + cardRect.height * 0.5;
+        }
+
+        const elbowX = Math.min(endX - 28, start.x + Math.max(42, (endX - start.x) * 0.46));
+        const elbowY = start.y;
+        const mid2X = Math.max(elbowX, endX - 24);
+        const mid2Y = endY;
+
+        const points = [
+          start,
+          { x: elbowX, y: elbowY },
+          { x: mid2X, y: mid2Y },
+          { x: endX, y: endY },
+        ];
+
+        const pathD = `M ${start.x} ${start.y} L ${elbowX} ${elbowY} L ${mid2X} ${mid2Y} L ${endX} ${endY}`;
+
+        // Proximity calculation matching SkillModules.js line 43-44:
+        // const distance = Math.hypot(mouse.x - start.x, mouse.y - start.y);
+        // const target = locked ? 1 : clamp(1 - (distance - radius * 0.7) / 230, 0.035, 1);
+        const distance = Math.hypot(currentX - start.x, currentY - start.y);
+        const targetAct = isCircuitLocked
+          ? 1
+          : activeHoveredNodeRef.current === skill.id
+          ? 1
+          : Math.max(0.08, Math.min(1, 1 - (distance - 77) / 230));
+
+        activationsRef.current[index] += (targetAct - activationsRef.current[index]) * 0.1;
+        const act = activationsRef.current[index];
+        nextProximities.push(act);
+
+        // Moving pulse dot along polyline at time * 0.08 (SkillModules.js line 46)
+        const pulse = pointOnPolyline(points, (timeRef.current * 0.08 + skill.offset) % 1);
+
+        nextLines.push({
+          id: skill.id,
+          pathD,
+          start,
+          pulse,
+          activation: act,
+        });
+      });
+
+      setLinesData(nextLines);
+      setProximities(nextProximities);
+      setPointerPos({ x: Math.round(currentX), y: Math.round(currentY) });
+      setIsHoveringHero(isUserInteractingRef.current || isIdleRunningRef.current);
+
+      animId = requestAnimationFrame(loop);
     };
 
-    const timeoutId = setTimeout(() => {
-      if (isAutoPlayingRef.current) {
-        animId = requestAnimationFrame(runAutoPlay);
-      }
-    }, 150);
-
-    return () => {
-      clearTimeout(timeoutId);
-      cancelAnimationFrame(animId);
-    };
+    animId = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(animId);
   }, [isCircuitLocked]);
 
-  // Immediate User Takeover (Mouse / Touch Interrupt)
+  // Handle immediate user interaction on the Hero container
   const handleUserInteraction = (
     e: React.MouseEvent<HTMLElement> | React.TouchEvent<HTMLElement>
   ) => {
-    if (isAutoPlayingRef.current) {
-      isAutoPlayingRef.current = false;
-      setIsAutoPlaying(false); // Instantly kill the auto-play loop
-    }
+    lastMeaningfulRef.current = performance.now();
+    isUserInteractingRef.current = true;
     if (!heroRef.current) return;
     const rect = heroRef.current.getBoundingClientRect();
     const clientX = 'clientX' in e ? e.clientX : e.touches[0]?.clientX ?? 0;
     const clientY = 'clientY' in e ? e.clientY : e.touches[0]?.clientY ?? 0;
-    setPointerPos({ x: clientX - rect.left, y: clientY - rect.top });
-    setIsHoveringHero(true);
-
-    const coordEl = document.getElementById('coordinates');
-    if (coordEl) {
-      coordEl.textContent = `X ${Math.round(clientX)} / Y ${Math.round(clientY)}`;
-    }
+    userMousePosRef.current = { x: clientX - rect.left, y: clientY - rect.top };
   };
 
-  // Global listeners so any mouse/touch movement immediately cancels auto-play
+  // Global mousemove/touchmove listener so any user activity immediately takes over
   useEffect(() => {
-    const handleGlobalInteraction = (e: MouseEvent | TouchEvent) => {
-      if (isAutoPlayingRef.current) {
-        isAutoPlayingRef.current = false;
-        setIsAutoPlaying(false);
-      }
+    const handleGlobal = (e: MouseEvent | TouchEvent) => {
+      lastMeaningfulRef.current = performance.now();
+      isUserInteractingRef.current = true;
       if (!heroRef.current) return;
       const rect = heroRef.current.getBoundingClientRect();
       const clientX = 'clientX' in e ? e.clientX : (e as TouchEvent).touches[0]?.clientX ?? 0;
       const clientY = 'clientY' in e ? e.clientY : (e as TouchEvent).touches[0]?.clientY ?? 0;
-      if (
-        clientX >= rect.left &&
-        clientX <= rect.right &&
-        clientY >= rect.top &&
-        clientY <= rect.bottom
-      ) {
-        setPointerPos({ x: clientX - rect.left, y: clientY - rect.top });
-        setIsHoveringHero(true);
-      } else {
-        setIsHoveringHero(false);
-      }
+      userMousePosRef.current = { x: clientX - rect.left, y: clientY - rect.top };
     };
 
-    window.addEventListener('mousemove', handleGlobalInteraction, { passive: true });
-    window.addEventListener('touchmove', handleGlobalInteraction, { passive: true });
+    window.addEventListener('mousemove', handleGlobal, { passive: true });
+    window.addEventListener('touchmove', handleGlobal, { passive: true });
     return () => {
-      window.removeEventListener('mousemove', handleGlobalInteraction);
-      window.removeEventListener('touchmove', handleGlobalInteraction);
+      window.removeEventListener('mousemove', handleGlobal);
+      window.removeEventListener('touchmove', handleGlobal);
     };
   }, []);
-
-  // Smooth lerp loop for proximity intensity on connector lines & HUD cards
-  useEffect(() => {
-    let animId: number;
-    const loop = () => {
-      smoothPosRef.current.x += (pointerPos.x - smoothPosRef.current.x) * 0.18;
-      smoothPosRef.current.y += (pointerPos.y - smoothPosRef.current.y) * 0.18;
-      setSmoothPos({
-        x: Math.round(smoothPosRef.current.x * 10) / 10,
-        y: Math.round(smoothPosRef.current.y * 10) / 10,
-      });
-      animId = requestAnimationFrame(loop);
-    };
-    animId = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(animId);
-  }, [pointerPos]);
-
-  // Calculate 3-segment connector polylines from portrait anchors to card left edges
-  const updateConnectorLines = useCallback(() => {
-    if (!containerRef.current || !portraitRef.current) return;
-    const containerRect = containerRef.current.getBoundingClientRect();
-    const portraitRect = portraitRef.current.getBoundingClientRect();
-
-    if (portraitRect.width === 0 || portraitRect.height === 0) return;
-
-    const computedLines: ConnectorLine[] = [];
-
-    data.circuitNodes.forEach((node, index) => {
-      const cardEl = cardRefs.current[index];
-      if (!cardEl) return;
-
-      const cardRect = cardEl.getBoundingClientRect();
-
-      // Anchor point on portrait edge
-      const startX =
-        portraitRect.left - containerRect.left + portraitRect.width * (node.anchorX / 100);
-      const startY =
-        portraitRect.top - containerRect.top + portraitRect.height * (node.anchorY / 100);
-
-      // Card left-edge center point
-      const boxLeftX = cardRect.left - containerRect.left;
-      const endY = cardRect.top - containerRect.top + cardRect.height / 2;
-
-      // 3-Segment Circuit Line Geometry:
-      // points="${startX},${startY} ${midX1},${startY} ${midX2},${endY} ${boxLeftX},${endY}"
-      const dx = Math.max(20, boxLeftX - startX);
-      const midX1 = startX + dx * 0.35;
-      const midX2 = startX + dx * 0.68;
-
-      computedLines.push({
-        id: node.id,
-        startX,
-        startY,
-        midX1,
-        midX2,
-        boxLeftX,
-        endY,
-      });
-    });
-
-    setLines(computedLines);
-  }, [data.circuitNodes]);
-
-  useEffect(() => {
-    const update = () => {
-      requestAnimationFrame(updateConnectorLines);
-    };
-
-    update();
-    window.addEventListener('resize', update);
-    window.addEventListener('scroll', update, { passive: true });
-
-    const t1 = setTimeout(update, 100);
-    const t2 = setTimeout(update, 400);
-
-    return () => {
-      window.removeEventListener('resize', update);
-      window.removeEventListener('scroll', update);
-      clearTimeout(t1);
-      clearTimeout(t2);
-    };
-  }, [updateConnectorLines, isCircuitLocked]);
-
-  // Known vertical centers of the 5 HUD nodes: 28%, 39%, 50%, 61%, 72%
-  const nodeYPercentages = [0.28, 0.39, 0.50, 0.61, 0.72];
-
-  // Calculate proximity intensity for each node & line based on smoothPos.y
-  const nodeProximities: number[] = data.circuitNodes.map((node, i) => {
-    if (isCircuitLocked) return 1;
-    if (!isHoveringHero && !isAutoPlaying) return 0;
-    if (activeHoveredNode === node.id) return 1;
-
-    const line = lines[i];
-    const vh = heroRef.current ? heroRef.current.offsetHeight : 800;
-    const nodeYPx = line ? line.endY : vh * (nodeYPercentages[i] ?? (0.28 + i * 0.11));
-
-    const dist = Math.abs(smoothPos.y - nodeYPx);
-    const proximity = Math.max(0, 1 - dist / 110);
-    return Math.round(proximity * 100) / 100;
-  });
-
-  const nodeIsLit: boolean[] = nodeProximities.map((p) => p > 0.4);
 
   return (
     <section
@@ -296,9 +280,13 @@ export function HeroSection({ data }: HeroSectionProps) {
       ref={heroRef}
       onMouseMove={handleUserInteraction}
       onTouchMove={handleUserInteraction}
-      onMouseEnter={() => setIsHoveringHero(true)}
+      onMouseEnter={() => {
+        isUserInteractingRef.current = true;
+        setIsHoveringHero(true);
+      }}
       onMouseLeave={() => {
-        if (!isAutoPlayingRef.current) setIsHoveringHero(false);
+        isUserInteractingRef.current = false;
+        if (!isIdleRunningRef.current) setIsHoveringHero(false);
       }}
       className="chapter hero relative h-screen min-h-[700px] w-full flex items-center justify-between overflow-hidden select-none scroll-mt-16 pointer-events-auto"
       style={{
@@ -315,112 +303,48 @@ export function HeroSection({ data }: HeroSectionProps) {
         }}
       />
 
-      {/* SVG Interactive Circuit Lines with Moving Pulse Dots */}
+      {/* SVG Interactive Circuit Lines with Slow Moving Pulse Dots (Matching SkillModules.js) */}
       <svg
-        className="pointer-events-none absolute inset-0 w-full h-full z-20 overflow-visible"
+        className="hero-skill-connectors pointer-events-none absolute inset-0 w-full h-full z-20 overflow-visible"
         aria-hidden="true"
       >
-        {lines.map((line, index) => {
-          const proximity = nodeProximities[index] ?? 0;
-          const isHighLit = proximity > 0.4 || isCircuitLocked;
-          const pathD = `M ${line.startX} ${line.startY} L ${line.midX1} ${line.startY} L ${line.midX2} ${line.endY} L ${line.boxLeftX} ${line.endY}`;
-
-          return (
-            <g
-              key={line.id}
+        {linesData.map((item) => (
+          <g key={item.id}>
+            {/* 3-Segment Polyline Path */}
+            <path
+              className="hero-skill-path"
+              d={item.pathD}
               style={{
-                opacity: isCircuitLocked ? 1 : isHighLit ? Math.max(0.75, proximity) : 0.35,
-                transition: 'opacity 0.25s ease',
+                opacity: isCircuitLocked ? 1 : Math.max(0.1, item.activation),
               }}
-            >
-              {/* 3-Segment Circuit Line */}
-              <polyline
-                points={`${line.startX},${line.startY} ${line.midX1},${line.startY} ${line.midX2},${line.endY} ${line.boxLeftX},${line.endY}`}
-                fill="none"
-                stroke={isHighLit ? '#00E599' : 'rgba(98, 245, 183, 0.28)'}
-                strokeWidth={isHighLit ? 1.5 : 1}
-              />
+            />
 
-              {/* Start anchor circle on portrait */}
-              <circle
-                cx={line.startX}
-                cy={line.startY}
-                r={isHighLit ? 3.5 : 2}
-                fill={isHighLit ? '#FFFFFF' : 'rgba(98, 245, 183, 0.45)'}
-                style={{
-                  transition: 'r 0.25s ease, fill 0.25s ease',
-                }}
-                className={isHighLit ? 'drop-shadow-[0_0_8px_#00E599]' : ''}
-              />
+            {/* Source Anchor Node on Bust (r=2.2) */}
+            <circle
+              className="hero-skill-node"
+              cx={item.start.x}
+              cy={item.start.y}
+              r="2.2"
+              style={{
+                opacity: isCircuitLocked ? 1 : Math.max(0.12, item.activation),
+              }}
+            />
 
-              {/* Elbow 1 circle */}
-              <circle
-                cx={line.midX1}
-                cy={line.startY}
-                r={isHighLit ? 2.5 : 1.8}
-                fill={isHighLit ? '#FFFFFF' : 'rgba(98, 245, 183, 0.35)'}
-                style={{
-                  transition: 'r 0.25s ease, fill 0.25s ease',
-                }}
-                className={isHighLit ? 'drop-shadow-[0_0_6px_#00E599]' : ''}
-              />
-
-              {/* Elbow 2 circle */}
-              <circle
-                cx={line.midX2}
-                cy={line.endY}
-                r={isHighLit ? 2.5 : 1.8}
-                fill={isHighLit ? '#FFFFFF' : 'rgba(98, 245, 183, 0.35)'}
-                style={{
-                  transition: 'r 0.25s ease, fill 0.25s ease',
-                }}
-                className={isHighLit ? 'drop-shadow-[0_0_6px_#00E599]' : ''}
-              />
-
-              {/* Card connection node circle */}
-              <circle
-                cx={line.boxLeftX}
-                cy={line.endY}
-                r={isHighLit ? 3 : 2}
-                fill={isHighLit ? '#00E599' : 'rgba(98, 245, 183, 0.4)'}
-                style={{
-                  transition: 'r 0.25s ease, fill 0.25s ease',
-                }}
-                className={isHighLit ? 'drop-shadow-[0_0_6px_#00E599]' : ''}
-              />
-
-              {/* Continuous Moving Data Dot 1 */}
-              <circle
-                r={isHighLit ? 3.5 : 2}
-                fill={isHighLit ? '#FFFFFF' : 'rgba(98, 245, 183, 0.7)'}
-                className={isHighLit ? 'drop-shadow-[0_0_8px_#00E599]' : ''}
-              >
-                <animateMotion
-                  path={pathD}
-                  dur={`${7.0 + index * 0.6}s`}
-                  repeatCount="indefinite"
-                />
-              </circle>
-
-              {/* Continuous Moving Data Dot 2 (Staggered offset) */}
-              <circle
-                r={isHighLit ? 2.5 : 1.6}
-                fill={isHighLit ? '#5EEAD4' : 'rgba(98, 245, 183, 0.45)'}
-                className={isHighLit ? 'drop-shadow-[0_0_6px_#00E599]' : ''}
-              >
-                <animateMotion
-                  path={pathD}
-                  dur={`${7.0 + index * 0.6}s`}
-                  begin={`${3.5 + index * 0.3}s`}
-                  repeatCount="indefinite"
-                />
-              </circle>
-            </g>
-          );
-        })}
+            {/* Continuous Slow Traveling Pulse Dot (r=2.4) */}
+            <circle
+              className="hero-skill-pulse"
+              cx={item.pulse.x}
+              cy={item.pulse.y}
+              r="2.4"
+              style={{
+                opacity: isCircuitLocked ? 1 : Math.max(0.14, item.activation),
+              }}
+            />
+          </g>
+        ))}
       </svg>
 
-      {/* Left Column: Focused Hero Display Typography (Matching Picture 2) */}
+      {/* Left Column: Focused Hero Display Typography (Matching Reference Layout) */}
       <div className="absolute left-[clamp(2rem,5vw,5.5rem)] top-[50%] -translate-y-1/2 z-20 flex flex-col items-start pointer-events-auto select-none">
         {/* Giant solid white first name with subtle bottom inner shadow */}
         <h1
@@ -497,13 +421,13 @@ export function HeroSection({ data }: HeroSectionProps) {
         isCircuitLocked={isCircuitLocked}
         onToggleLock={toggleCircuitLock}
         heroPointerPos={pointerPos}
-        isHoveringHero={isHoveringHero || isAutoPlaying}
+        isHoveringHero={isHoveringHero}
         onContainerRef={(el) => {
           portraitRef.current = el;
         }}
       />
 
-      {/* Bottom Center: Control Bar (Matching Picture 2) */}
+      {/* Bottom Center: Control Bar (Matching Reference Layout) */}
       <div
         className="absolute z-30 flex items-center gap-3.5 select-none pointer-events-auto"
         style={{
@@ -569,19 +493,19 @@ export function HeroSection({ data }: HeroSectionProps) {
         </button>
       </div>
 
-      {/* Right Column: 5 Proximity-Illuminated Circuit Callout Nodes */}
-      <div className="absolute right-[5vw] top-[50%] -translate-y-1/2 z-20 pointer-events-auto">
-        <CircuitCalloutNodes
-          nodes={data.circuitNodes}
-          isLocked={isCircuitLocked}
-          nodeIsLit={nodeIsLit}
-          nodeProximities={nodeProximities}
-          onHoverNode={setActiveHoveredNode}
-          onCardRef={(index, el) => {
-            cardRefs.current[index] = el;
-          }}
-        />
-      </div>
+      {/* Right: 5 Proximity-Illuminated Skill HUD Modules (Exact match to SkillModules.js) */}
+      <CircuitCalloutNodes
+        nodes={data.circuitNodes}
+        isLocked={isCircuitLocked}
+        nodeIsLit={proximities.map((p) => p > 0.4)}
+        nodeProximities={proximities}
+        onHoverNode={(id) => {
+          activeHoveredNodeRef.current = id;
+        }}
+        onCardRef={(index, el) => {
+          cardRefs.current[index] = el;
+        }}
+      />
     </section>
   );
 }

@@ -23,8 +23,8 @@ export function CustomCursor() {
     document.documentElement.classList.add('custom-cursor-active');
     document.body.classList.add('custom-cursor-active');
 
-    const initialX = Math.round(window.innerWidth * 0.78);
-    const initialY = Math.round(window.innerHeight * 0.78);
+    const initialX = Math.round(window.innerWidth / 2);
+    const initialY = Math.round(window.innerHeight / 2);
     mousePos.current = { x: initialX, y: initialY };
     ringPos.current = { x: initialX, y: initialY };
     setIsVisible(true);

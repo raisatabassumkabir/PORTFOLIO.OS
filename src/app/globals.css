@@ -119,6 +119,95 @@ body.custom-cursor-active * {
 }
 
 /* ========================================================
+   Hero Skill Connectors & HUD Modules (Exact Deployed Match)
+   ======================================================== */
+.hero-skill-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 25;
+  pointer-events: none;
+}
+
+.hero-skill-connectors {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.hero-skill-path {
+  fill: none;
+  stroke: rgba(22, 247, 192, 0.65);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+  filter: drop-shadow(0 0 4px rgba(22, 247, 192, 0.35));
+  opacity: var(--activation, 0.04);
+  transition: opacity 0.18s linear;
+}
+
+.hero-skill-node {
+  fill: #16f7c0;
+  filter: drop-shadow(0 0 7px #16f7c0);
+  opacity: var(--activation, 0.05);
+}
+
+.hero-skill-pulse {
+  fill: #cafff1;
+  filter: drop-shadow(0 0 7px #16f7c0);
+  opacity: var(--activation, 0.05);
+}
+
+.hero-skill-module {
+  --activation: 0.04;
+  position: absolute;
+  right: clamp(1.3rem, 5.8vw, 7rem);
+  top: var(--top);
+  width: clamp(132px, 15vw, 205px);
+  padding: 0.68rem 0.85rem 0.64rem 2.8rem;
+  border: 1px solid rgba(22, 247, 192, 0.58);
+  border-radius: 2px;
+  background: rgba(2, 13, 11, 0.76);
+  color: rgba(199, 255, 238, 0.96);
+  box-shadow: 0 0 24px rgba(0, 232, 161, 0.12);
+  opacity: var(--activation);
+  transform: translateX(18px);
+  pointer-events: auto;
+  cursor: pointer;
+  transition: border-color 0.18s, background 0.18s, color 0.18s, box-shadow 0.18s, opacity 0.18s, transform 0.18s;
+  user-select: none;
+}
+
+.hero-skill-module:before {
+  content: attr(data-code);
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  color: var(--reveal-accent, #16f7c0);
+  font: 500 0.65rem var(--mono);
+  transform: translateY(-50%);
+}
+
+.hero-skill-module strong {
+  display: block;
+  font: 500 clamp(0.61rem, 0.8vw, 0.76rem) var(--mono);
+  letter-spacing: 0.12em;
+}
+
+.hero-skill-module small {
+  display: block;
+  margin-top: 0.25rem;
+  color: rgba(130, 181, 166, 0.78);
+  font: 400 0.48rem var(--mono);
+  letter-spacing: 0.1em;
+}
+
+.hero-reveal-locked .hero-skill-module {
+  backdrop-filter: blur(10px);
+}
+
+/* ========================================================
    Hero Section & HUD Typography (Exact Reference Styling)
    ======================================================== */
 .hero__copy {

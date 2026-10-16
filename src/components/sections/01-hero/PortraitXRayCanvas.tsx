@@ -23,12 +23,9 @@ export function PortraitXRayCanvas({
   onContainerRef,
 }: PortraitXRayCanvasProps) {
   const portraitRef = useRef<HTMLDivElement | null>(null);
-  const targetPosRef = useRef({ x: 300, y: 220 });
-  const currentPosRef = useRef({ x: 300, y: 220 });
   const [pointerPos, setPointerPos] = useState({ x: 300, y: 220 });
-  const hasUserMovedRef = useRef(false);
 
-  // Sync target coordinates from heroPointerPos
+  // Synchronize spotlight position directly with hero animation loop
   useEffect(() => {
     if (!heroPointerPos || !portraitRef.current) return;
     const portraitRect = portraitRef.current.getBoundingClientRect();
@@ -38,58 +35,11 @@ export function PortraitXRayCanvas({
     const offsetX = heroRect ? portraitRect.left - heroRect.left : 0;
     const offsetY = heroRect ? portraitRect.top - heroRect.top : 0;
 
-    targetPosRef.current = {
-      x: heroPointerPos.x - offsetX,
-      y: heroPointerPos.y - offsetY,
-    };
+    const localX = heroPointerPos.x - offsetX;
+    const localY = heroPointerPos.y - offsetY;
+
+    setPointerPos({ x: Math.round(localX), y: Math.round(localY) });
   }, [heroPointerPos]);
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      hasUserMovedRef.current = true;
-      if (!portraitRef.current) return;
-      const rect = portraitRef.current.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-
-      targetPosRef.current = { x, y };
-    };
-
-    const handleTeaserMove = (e: Event) => {
-      if (hasUserMovedRef.current) return;
-      const customEvent = e as CustomEvent<{ x: number; y: number }>;
-      if (!customEvent.detail || !portraitRef.current) return;
-      const rect = portraitRef.current.getBoundingClientRect();
-      const x = customEvent.detail.x - rect.left;
-      const y = customEvent.detail.y - rect.top;
-      targetPosRef.current = { x, y };
-    };
-
-    window.addEventListener('mousemove', handleMouseMove, { passive: true });
-    window.addEventListener('hero-teaser-move', handleTeaserMove as EventListener);
-
-    let animId: number;
-    const loop = () => {
-      const dx = targetPosRef.current.x - currentPosRef.current.x;
-      const dy = targetPosRef.current.y - currentPosRef.current.y;
-      if (Math.abs(dx) > 0.1 || Math.abs(dy) > 0.1) {
-        currentPosRef.current.x += dx * 0.22;
-        currentPosRef.current.y += dy * 0.22;
-        setPointerPos({
-          x: Math.round(currentPosRef.current.x),
-          y: Math.round(currentPosRef.current.y),
-        });
-      }
-      animId = requestAnimationFrame(loop);
-    };
-    animId = requestAnimationFrame(loop);
-
-    return () => {
-      cancelAnimationFrame(animId);
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('hero-teaser-move', handleTeaserMove as EventListener);
-    };
-  }, []);
 
   const isCustomCyber = Boolean(cyberImage && cyberImage.trim().length > 0 && cyberImage !== baseImage);
   const finalCyberImage = isCustomCyber ? cyberImage! : baseImage;
@@ -97,7 +47,7 @@ export function PortraitXRayCanvas({
   const pointerX = pointerPos.x;
   const pointerY = pointerPos.y;
 
-  // Seamless soft-feathered spotlight mask (zero borders, pure feathered alpha-mask)
+  // Seamless soft-feathered spotlight mask (zero borders, pure feathered Gaussian-like alpha falloff)
   const cyberMaskStyle: React.CSSProperties = isCircuitLocked
     ? {
         WebkitMaskImage: 'none',
@@ -108,10 +58,10 @@ export function PortraitXRayCanvas({
           : 'brightness(1.15) contrast(1.4) hue-rotate(145deg) saturate(2.5)',
       }
     : {
-        WebkitMaskImage: `radial-gradient(ellipse 280px 140px at ${pointerX}px ${pointerY}px, rgba(0,0,0,1) 20%, rgba(0,0,0,0.5) 55%, transparent 100%)`,
-        maskImage: `radial-gradient(ellipse 280px 140px at ${pointerX}px ${pointerY}px, rgba(0,0,0,1) 20%, rgba(0,0,0,0.5) 55%, transparent 100%)`,
+        WebkitMaskImage: `radial-gradient(ellipse 260px 180px at ${pointerX}px ${pointerY}px, rgba(0,0,0,1) 20%, rgba(0,0,0,0.6) 55%, transparent 100%)`,
+        maskImage: `radial-gradient(ellipse 260px 180px at ${pointerX}px ${pointerY}px, rgba(0,0,0,1) 20%, rgba(0,0,0,0.6) 55%, transparent 100%)`,
         opacity: isHoveringHero ? 1 : 0,
-        transition: 'opacity 0.4s ease',
+        transition: 'opacity 0.3s ease',
         filter: isCustomCyber
           ? 'none'
           : 'brightness(1.15) contrast(1.4) hue-rotate(145deg) saturate(2.5)',
