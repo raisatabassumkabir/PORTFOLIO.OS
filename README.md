@@ -1,36 +1,159 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# PORTFOLIO.OS — Developer Portfolio Template
 
-## Getting Started
+> **PORTFOLIO.OS** is a cybernetic HUD / OS-inspired, high-performance developer portfolio template engineered with Next.js 16, Tailwind CSS, Framer Motion, and GSAP. Designed as a plug-and-play template for developers, engineers, and creators.
 
-First, run the development server:
+---
+
+## ⚡ Quick Start
 
 ```bash
+# 1. Install dependencies
+npm install
+
+# 2. Start local development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# 3. Open in your browser
+http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🛠️ How to Customize This Template
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+All portfolio content is centralized in **`src/config/portfolio.config.ts`**. You can configure your identity, projects, work history, and contact links in this single file.
 
-## Learn More
+### 1. Identity & Hero Section (`hero`)
+Change your name, role, and HUD monogram:
 
-To learn more about Next.js, take a look at the following resources:
+```typescript
+// src/config/portfolio.config.ts
+meta: {
+  osName: 'PORTFOLIO.OS',
+  version: 'V / 03.26',
+  buildStatus: 'ACTIVE',
+  monogram: 'MK.', // Top-left HUD monogram (e.g., MK.)
+  availabilityText: 'AVAILABLE FOR OPPORTUNITIES',
+},
+hero: {
+  firstName: 'MARTIN',
+  lastName: 'KING',
+  role: 'Mobile Application & Full-Stack Developer',
+  taglinePrefix: 'YOU IMAGINE.',
+  taglineHighlight: 'I DELIVER',
+  basePortrait: '/assets/portrait/portrait-base.png',
+  cyberPortrait: '/assets/portrait/portrait-cyber.png',
+  circuitNodes: [
+    { id: 'ai', code: 'AI', title: 'AI / ML', subtitle: 'INTELLIGENT SYSTEMS', anchorX: 54, anchorY: 31 },
+    { id: 'api', code: 'API', title: 'BACKEND', subtitle: 'SCALABLE SERVICES', anchorX: 56, anchorY: 41 },
+    { id: 'app', code: 'APP', title: 'MOBILE', subtitle: 'FLUTTER EXPERIENCES', anchorX: 57, anchorY: 52 },
+    { id: 'cld', code: 'CLD', title: 'CLOUD', subtitle: 'DEPLOYED INFRA', anchorX: 59, anchorY: 63 },
+    { id: 'sec', code: 'SEC', title: 'SECURITY', subtitle: 'PROTECTED DATA', anchorX: 57, anchorY: 75 },
+  ],
+}
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 2. Profile & Metrics Bento Grid (`profile`)
+Set your bio paragraphs, experience metrics, and resume download link:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```typescript
+profile: {
+  greeting: "I'm Martin King",
+  bioTitle: "Mobile Application & Full-Stack Developer",
+  bioParagraphs: [
+    "Your bio paragraph 1...",
+    "Your bio paragraph 2...",
+  ],
+  metrics: [
+    { value: '4+', label: 'years', description: 'Building mobile and full-stack products.' },
+    { value: '50+', label: 'projects', description: 'Products shipped across mobile, web and backend systems.' },
+    { value: '99%', label: 'satisfaction', description: 'Quality-focused delivery shaped by real client feedback.' },
+    { value: '8+', label: 'technologies', description: 'Flutter, Dart, React, Firebase, Node.js, and Cloud.', tilt: true },
+  ],
+  resumeUrl: '/api/resume', // Serves public/resume/resume.pdf
+}
+```
 
-## Deploy on Vercel
+### 3. Technology Arsenal Matrix (`stack`)
+Configure the 9 interactive modules in the 3x3 tech matrix:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```typescript
+stack: {
+  sectionCode: '03 / TECHNOLOGY ARSENAL',
+  titleSolid: 'Tools, aligned',
+  titleOutline: 'around the mission.',
+  helperText: 'Scroll rotates the active technology system. Point at a module to inspect its role.',
+  items: [
+    { id: 'flutter', number: '01', name: 'Flutter', category: 'MOBILE CORE', description: '...' },
+    // ... up to 9 modules
+  ],
+}
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 4. Project Matrix & Detailed Case Studies (`work`)
+Features dynamic morphing background colors and interactive slide-over case studies:
+
+- **01: Let's Ryde** — Real-Time Mobility (Mint Theme `#E6FAF3`)
+- **02: MIA** — Driver Assistance (Dark Obsidian Theme `#071013`)
+- **03: ClientBook** — Client & Booking Management (Warm Champagne `#FAF6EE`)
+- **04: SaifLocators** — Field Geolocation (Navy Blueprint `#0E2238`)
+- **05: Linear Craze** — Mobile Mathematics (Deep Violet `#0D0B1C`)
+- **06: CoffeeBrew** — Beverage Preferences (Espresso Theme `#140C08`)
+
+Add your own live links (`liveUrl`), repository links (`githubUrl`), and architectural case studies directly in `projects`.
+
+### 5. Career Constellation Journey (`journey`)
+Timeline nodes showcasing roles, companies, dates, key highlights, and tech stacks:
+
+```typescript
+journey: {
+  sectionCode: '05 / CAREER CONSTELLATION',
+  titleSolid: 'Growth measured',
+  titleOutline: 'in shipped systems.',
+  nodes: [
+    {
+      id: 'role-01',
+      nodeNumber: '01',
+      role: 'Software Developer',
+      company: 'Tech Studio · London, UK (Remote)',
+      period: 'SEP 2025 — MAR 2026',
+      description: '...',
+      highlights: ['...'],
+      techStack: ['Flutter', 'Dart', 'REST APIs', 'Android', 'iOS'],
+    },
+    // ...
+  ],
+}
+```
+
+### 6. Contact & Social Channels (`contact`)
+Update your contact email, social channels, and footer links:
+
+```typescript
+contact: {
+  sectionCode: '06 / FINAL TRANSMISSION',
+  signatureUrl: '/assets/portrait/signature.svg',
+  headlineWhite: 'YOU IMAGINE,',
+  headlineLime: 'I DELIVER.',
+  portraitImage: '/assets/portrait/portrait-base.png',
+  connectLinks: [
+    { label: 'EMAIL DIRECT', href: 'mailto:contact@martinking.dev' },
+    { label: 'LINKEDIN', href: 'https://linkedin.com/in/martinking' },
+    { label: 'GITHUB', href: 'https://github.com/martinking' },
+    { label: 'TWITTER / X', href: 'https://twitter.com/martinking' },
+    { label: 'SCHEDULE CALL', href: 'https://cal.com/martinking' },
+  ],
+  copyright: '© 2026 Martin King. Powered by PORTFOLIO.OS. All systems operational.',
+}
+```
+
+---
+
+## 🚀 Deployment
+
+The project is optimized for deployment on [Vercel](https://vercel.com/) or any Node.js hosting platform:
+
+```bash
+npm run build
+npm run start
+```

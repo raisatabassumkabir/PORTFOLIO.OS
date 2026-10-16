@@ -1,26 +1,273 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #020706;
+  --panel: rgba(7, 19, 18, 0.72);
+  --line: rgba(117, 255, 213, 0.18);
+  --line2: rgba(121, 195, 255, 0.15);
+  --green: #62f5b7;
+  --cyan: #54d9ff;
+  --violet: #a58cff;
+  --white: #eefbf6;
+  --muted: #88a099;
+  --mono: 'DM Mono', monospace;
+  --sans: 'Manrope', sans-serif;
+  --pad: clamp(1.25rem, 5vw, 5.5rem);
+  --reveal-accent: #16f7c0;
+  --reveal-cyan: #00e8d1;
+  --reveal-dark: #020807;
+
+  /* Project Matrix Dynamic Theming RGB Tokens */
+  --project-panel-r: 255;
+  --project-panel-g: 255;
+  --project-panel-b: 255;
+  --project-muted-r: 92;
+  --project-muted-g: 101;
+  --project-muted-b: 76;
+  --project-text-r: 14;
+  --project-text-g: 17;
+  --project-text-b: 7;
+  --project-accent-r: 0;
+  --project-accent-g: 143;
+  --project-accent-b: 101;
+  --project-background-r: 225;
+  --project-background-g: 250;
+  --project-background-b: 239;
+
+  --bg-cyber: #050B09;
+  --bg-surface: #091410;
+  --border-cyber: #132A21;
+  --accent-emerald: #10B981;
+  --accent-mint: #00E599;
+  --accent-lime: #C8FF00;
+  --text-primary: #F3F5F4;
+  --text-muted: #6E857C;
+  --text-light-dark: #0A1410;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+* {
+  box-sizing: border-box;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@theme {
+  --font-sans: 'Manrope', sans-serif;
+  --font-heading: 'Manrope', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+}
+
+html, body {
+  scroll-behavior: smooth;
+  background-color: var(--bg-cyber);
+  color: var(--text-primary);
+  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+  overflow-x: clip;
+}
+
+/* Desktop Custom Cursor Hide Native */
+@media (min-width: 1024px) {
+  body.custom-cursor-active,
+  body.custom-cursor-active *,
+  html.custom-cursor-active,
+  html.custom-cursor-active * {
+    cursor: none !important;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Interactive Cyber Cursor */
+.cursor {
+  position: fixed;
+  z-index: 10000;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+  mix-blend-mode: difference;
+}
+
+.cursor i {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #ffffff;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.cursor span {
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.22s cubic-bezier(0.16, 1, 0.3, 1), height 0.22s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, background-color 0.2s ease;
+  pointer-events: none;
+}
+
+.cursor.hover span {
+  width: 54px;
+  height: 54px;
+  border-color: var(--green);
+  background: rgba(98, 245, 183, 0.08);
+}
+
+.cursor.target span {
+  border-radius: 2px;
+  border-width: 0;
+  width: 68px;
+  height: 68px;
+  background:
+    linear-gradient(var(--green), var(--green)) left top / 12px 1px no-repeat,
+    linear-gradient(var(--green), var(--green)) left top / 1px 12px no-repeat,
+    linear-gradient(var(--green), var(--green)) right top / 12px 1px no-repeat,
+    linear-gradient(var(--green), var(--green)) right top / 1px 12px no-repeat,
+    linear-gradient(var(--green), var(--green)) left bottom / 12px 1px no-repeat,
+    linear-gradient(var(--green), var(--green)) left bottom / 1px 12px no-repeat,
+    linear-gradient(var(--green), var(--green)) right bottom / 12px 1px no-repeat,
+    linear-gradient(var(--green), var(--green)) right bottom / 1px 12px no-repeat;
+}
+
+/* Typography Classes */
+.font-heading {
+  font-family: 'Manrope', sans-serif;
+}
+
+.font-mono-hud {
+  font-family: 'DM Mono', 'JetBrains Mono', monospace;
+  letter-spacing: 0.12em;
+}
+
+.font-editorial {
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+/* Hollow Outlined Wireframe Typography */
+.stroke-text {
+  color: transparent !important;
+  -webkit-text-stroke: 1px rgba(238, 251, 246, 0.42);
+  font-family: 'Manrope', sans-serif;
+  font-style: normal;
+  letter-spacing: -0.065em;
+  transition: -webkit-text-stroke 0.3s ease;
+}
+
+.stroke-text:hover {
+  -webkit-text-stroke: 1px rgba(238, 251, 246, 0.65);
+}
+
+.stroke-text-light {
+  color: transparent !important;
+  -webkit-text-stroke: 1px rgba(10, 20, 16, 0.35);
+}
+
+.stroke-text-light:hover {
+  -webkit-text-stroke: 1px rgba(5, 150, 105, 0.7);
+}
+
+/* Universal Portrait Mask to Eliminate Rectangular Studio Box Edges */
+.portrait-blend-mask {
+  mix-blend-mode: lighten;
+  -webkit-mask-image: radial-gradient(ellipse 68% 72% at 50% 48%, #000 55%, transparent 96%), linear-gradient(to top, transparent 0%, #000 12%, #000 100%);
+  mask-image: radial-gradient(ellipse 68% 72% at 50% 48%, #000 55%, transparent 96%), linear-gradient(to top, transparent 0%, #000 12%, #000 100%);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+
+/* HUD Grid Patterns */
+.bg-grid-cyber {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(16, 185, 129, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(16, 185, 129, 0.05) 1px, transparent 1px);
+}
+
+.bg-grid-mint {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(16, 185, 129, 0.14) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(16, 185, 129, 0.14) 1px, transparent 1px);
+}
+
+.bg-grid-obsidian {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(56, 189, 248, 0.12) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(56, 189, 248, 0.12) 1px, transparent 1px);
+}
+
+.bg-grid-blueprint {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(96, 165, 250, 0.14) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(96, 165, 250, 0.14) 1px, transparent 1px);
+}
+
+/* Neon & HUD Glow utilities */
+.glow-emerald {
+  box-shadow: 0 0 25px -5px rgba(16, 185, 129, 0.4);
+}
+
+.glow-mint {
+  box-shadow: 0 0 30px -5px rgba(0, 229, 153, 0.5);
+}
+
+.glow-lime {
+  box-shadow: 0 0 25px -5px rgba(200, 255, 0, 0.4);
+}
+
+.text-glow-mint {
+  text-shadow: 0 0 12px rgba(0, 229, 153, 0.6);
+}
+
+.text-glow-lime {
+  text-shadow: 0 0 14px rgba(200, 255, 0, 0.6);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #050B09;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #132A21;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #00E599;
+}
+
+/* Reticle targeting animation */
+@keyframes reticle-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.06);
+    opacity: 1;
+  }
+}
+
+.animate-reticle-pulse {
+  animation: reticle-pulse 2s infinite ease-in-out;
+}
+
+/* Radar scanline animation */
+@keyframes scanline {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(1000%);
+  }
+}
+
+.animate-scanline {
+  animation: scanline 6s linear infinite;
 }

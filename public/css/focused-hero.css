@@ -1,0 +1,21 @@
+/* Focused Hero View Overrides */
+.hero {
+  min-height: 125vh;
+}
+
+.hero .hero__layout {
+  align-items: center;
+}
+
+.hero__title .name {
+  letter-spacing: -0.08em;
+}
+
+.hero-portrait {
+  position: relative;
+  z-index: 5;
+}
+
+.hero-reveal__stage {
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(98, 245, 183, 0.08);
+}

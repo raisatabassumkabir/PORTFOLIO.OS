@@ -1,0 +1,33 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model ProjectInquiry {
+  id          String   @id @default(cuid())
+  clientName  String
+  clientEmail String
+  projectType String   // "Mobile App", "AI/ML System", "Full-Stack Web", "Cloud/API"
+  budgetRange String?
+  timeline    String?
+  brief       String
+  status      String   @default("NEW") // "NEW", "REVIEWED", "ARCHIVED"
+  createdAt   DateTime @default(now())
+}
+
+model ResumeTelemetry {
+  id           String   @id @default(cuid())
+  downloadedAt DateTime @default(now())
+  userAgent    String?
+  ipHash       String?
+}
+
+model SiteConfigOverride {
+  id        String   @id @default("singleton")
+  jsonData  String   // JSON stringified configuration overrides
+  updatedAt DateTime @updatedAt
+}

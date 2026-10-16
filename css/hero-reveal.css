@@ -1,0 +1,101 @@
+/* Hero Circuit Reveal & Skill Connectors */
+.hero-portrait--reveal {
+  position: relative;
+  overflow: visible;
+}
+
+.hero-reveal-ready .hero-reveal__fallback {
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
+.hero-reveal__stage {
+  position: relative;
+  overflow: hidden;
+  background: #020706;
+}
+
+#hero-reveal-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.hero-skill-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.hero-skill-connectors {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.hero-skill-path {
+  fill: none;
+  stroke: rgba(98, 245, 183, 0.4);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 2;
+  animation: dashMove 20s linear infinite;
+}
+
+@keyframes dashMove {
+  to {
+    stroke-dashoffset: -100;
+  }
+}
+
+.hero-skill-node {
+  fill: var(--green);
+  filter: drop-shadow(0 0 6px var(--green));
+}
+
+.hero-skill-pulse {
+  fill: #fff;
+  filter: drop-shadow(0 0 8px #fff);
+  animation: pulseGlow 1.8s ease-in-out infinite alternate;
+}
+
+@keyframes pulseGlow {
+  0% { transform: scale(0.8); opacity: 0.4; }
+  100% { transform: scale(1.4); opacity: 1; }
+}
+
+.hero-skill-module {
+  position: absolute;
+  right: 1rem;
+  background: rgba(3, 15, 12, 0.88);
+  border: 1px solid rgba(98, 245, 183, 0.25);
+  padding: 0.4rem 0.75rem;
+  font-family: var(--mono);
+  backdrop-filter: blur(8px);
+  pointer-events: auto;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.hero-skill-module:hover {
+  border-color: var(--green);
+  background: rgba(98, 245, 183, 0.15);
+  box-shadow: 0 0 15px rgba(98, 245, 183, 0.25);
+}
+
+.hero-skill-module strong {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--green);
+  letter-spacing: 0.1em;
+}
+
+.hero-skill-module small {
+  display: block;
+  font-size: 0.52rem;
+  color: #8aa49b;
+  letter-spacing: 0.12em;
+}

@@ -1,0 +1,30 @@
+export const themeTokens = {
+  darkCyber: {
+    bg: '#050B09',
+    surface: '#091410',
+    border: '#132A21',
+    borderGlow: 'rgba(16, 185, 129, 0.3)',
+    accentEmerald: '#10B981',
+    accentMint: '#00E599',
+    textPrimary: '#F3F5F4',
+    textMuted: '#6E857C',
+    hudBorder: 'rgba(255, 255, 255, 0.08)',
+  },
+  lightProfile: {
+    bg: '#F4F6F5',
+    cardDark: '#072A20',
+    cardWhite: '#FFFFFF',
+    textDark: '#0A1410',
+    textMuted: '#576B63',
+    borderLight: 'rgba(10, 20, 16, 0.08)',
+    accentGreen: '#072A20',
+  },
+  neonLime: {
+    bg: '#131813',
+    frameBorder: '#C8FF00',
+    accentLime: '#C8FF00',
+    textWhite: '#FFFFFF',
+    textMuted: '#8D9B8C',
+    surfaceDark: '#0A0E0A',
+  },
+};
