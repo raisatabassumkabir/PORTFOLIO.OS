@@ -42,10 +42,18 @@ export function CustomCursor() {
     }
 
     const handlePointerMove = (e: PointerEvent) => {
+      const isFirstMove = !hasUserMovedRef.current;
       hasUserMovedRef.current = true;
       const x = e.clientX;
       const y = e.clientY;
       mousePos.current = { x, y };
+
+      if (isFirstMove) {
+        ringPos.current = { x, y };
+        if (ringRef.current) {
+          ringRef.current.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%)`;
+        }
+      }
 
       if (!isVisible) setIsVisible(true);
 

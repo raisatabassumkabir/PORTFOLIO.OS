@@ -8,6 +8,7 @@ interface PortraitXRayCanvasProps {
   isCircuitLocked: boolean;
   onToggleLock: () => void;
   portraitMousePos?: { x: number; y: number } | null;
+  heroPointerPos?: { x: number; y: number };
   isHoveringHero: boolean;
   onContainerRef?: (el: HTMLDivElement | null) => void;
 }
@@ -17,6 +18,7 @@ export function PortraitXRayCanvas({
   cyberImage,
   isCircuitLocked,
   onToggleLock,
+  heroPointerPos,
   isHoveringHero,
   onContainerRef,
 }: PortraitXRayCanvasProps) {
@@ -24,8 +26,23 @@ export function PortraitXRayCanvas({
   const targetPosRef = useRef({ x: 300, y: 220 });
   const currentPosRef = useRef({ x: 300, y: 220 });
   const [pointerPos, setPointerPos] = useState({ x: 300, y: 220 });
-  const [isRevealing, setIsRevealing] = useState(false);
   const hasUserMovedRef = useRef(false);
+
+  // Sync target coordinates from heroPointerPos
+  useEffect(() => {
+    if (!heroPointerPos || !portraitRef.current) return;
+    const portraitRect = portraitRef.current.getBoundingClientRect();
+    const heroEl = portraitRef.current.closest('#home');
+    const heroRect = heroEl ? heroEl.getBoundingClientRect() : null;
+
+    const offsetX = heroRect ? portraitRect.left - heroRect.left : 0;
+    const offsetY = heroRect ? portraitRect.top - heroRect.top : 0;
+
+    targetPosRef.current = {
+      x: heroPointerPos.x - offsetX,
+      y: heroPointerPos.y - offsetY,
+    };
+  }, [heroPointerPos]);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -36,7 +53,6 @@ export function PortraitXRayCanvas({
       const y = e.clientY - rect.top;
 
       targetPosRef.current = { x, y };
-      setIsRevealing(true);
     };
 
     const handleTeaserMove = (e: Event) => {
@@ -47,25 +63,10 @@ export function PortraitXRayCanvas({
       const x = customEvent.detail.x - rect.left;
       const y = customEvent.detail.y - rect.top;
       targetPosRef.current = { x, y };
-      setIsRevealing(true);
-    };
-
-    const handleTeaserEnd = () => {
-      if (!hasUserMovedRef.current) {
-        setIsRevealing(false);
-      }
-    };
-
-    const handleMouseLeave = () => {
-      if (hasUserMovedRef.current) {
-        setIsRevealing(false);
-      }
     };
 
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
     window.addEventListener('hero-teaser-move', handleTeaserMove as EventListener);
-    window.addEventListener('hero-teaser-end', handleTeaserEnd);
-    document.addEventListener('mouseleave', handleMouseLeave);
 
     let animId: number;
     const loop = () => {
@@ -87,22 +88,14 @@ export function PortraitXRayCanvas({
       cancelAnimationFrame(animId);
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('hero-teaser-move', handleTeaserMove as EventListener);
-      window.removeEventListener('hero-teaser-end', handleTeaserEnd);
-      document.removeEventListener('mouseleave', handleMouseLeave);
     };
   }, []);
 
-  // Sync revealing state with hero hover
-  useEffect(() => {
-    if (isHoveringHero) {
-      setIsRevealing(true);
-    } else if (hasUserMovedRef.current) {
-      setIsRevealing(false);
-    }
-  }, [isHoveringHero]);
-
   const isCustomCyber = Boolean(cyberImage && cyberImage.trim().length > 0 && cyberImage !== baseImage);
   const finalCyberImage = isCustomCyber ? cyberImage! : baseImage;
+
+  const pointerX = pointerPos.x;
+  const pointerY = pointerPos.y;
 
   // Seamless soft-feathered spotlight mask (zero borders, pure feathered alpha-mask)
   const cyberMaskStyle: React.CSSProperties = isCircuitLocked
@@ -115,9 +108,9 @@ export function PortraitXRayCanvas({
           : 'brightness(1.15) contrast(1.4) hue-rotate(145deg) saturate(2.5)',
       }
     : {
-        WebkitMaskImage: `radial-gradient(ellipse 280px 140px at ${pointerPos.x}px ${pointerPos.y}px, rgba(0,0,0,1) 20%, rgba(0,0,0,0.5) 55%, transparent 100%)`,
-        maskImage: `radial-gradient(ellipse 280px 140px at ${pointerPos.x}px ${pointerPos.y}px, rgba(0,0,0,1) 20%, rgba(0,0,0,0.5) 55%, transparent 100%)`,
-        opacity: isRevealing ? 1 : 0,
+        WebkitMaskImage: `radial-gradient(ellipse 280px 140px at ${pointerX}px ${pointerY}px, rgba(0,0,0,1) 20%, rgba(0,0,0,0.5) 55%, transparent 100%)`,
+        maskImage: `radial-gradient(ellipse 280px 140px at ${pointerX}px ${pointerY}px, rgba(0,0,0,1) 20%, rgba(0,0,0,0.5) 55%, transparent 100%)`,
+        opacity: isHoveringHero ? 1 : 0,
         transition: 'opacity 0.4s ease',
         filter: isCustomCyber
           ? 'none'
@@ -135,26 +128,28 @@ export function PortraitXRayCanvas({
       className="hero-portrait hero-portrait--reveal scene-copy hero-reveal-ready hero-reveal-active pointer-events-auto cursor-pointer absolute bottom-0 left-1/2 z-10 flex h-[88vh] w-auto -translate-x-1/2 items-end justify-center select-none flex-shrink-0"
     >
       <div className="relative flex h-full w-auto items-end justify-center">
-        {/* Soft, organic ambient green spotlight following cursor with ZERO borders */}
-        <div
-          className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 rounded-full blur-[48px] transition-opacity duration-300"
-          style={{
-            left: pointerPos.x,
-            top: pointerPos.y,
-            width: '360px',
-            height: '200px',
-            background:
-              'radial-gradient(ellipse at center, rgba(0, 229, 153, 0.28) 0%, rgba(16, 185, 129, 0.12) 48%, transparent 75%)',
-            opacity: isRevealing && !isCircuitLocked ? 1 : 0,
-          }}
-        />
+        {/* Faint Ambient Green Beam (Background Glow) directly behind the portrait layer */}
+        {!isCircuitLocked && (
+          <div
+            className="pointer-events-none absolute z-0 -translate-x-1/2 -translate-y-1/2 rounded-full"
+            style={{
+              left: `${pointerX}px`,
+              top: `${pointerY}px`,
+              width: '520px',
+              height: '180px',
+              background:
+                'radial-gradient(ellipse, rgba(16, 185, 129, 0.08) 0%, rgba(16, 185, 129, 0.02) 50%, transparent 80%)',
+              filter: 'blur(32px)',
+            }}
+          />
+        )}
 
         {/* Ambient Backlight Glow behind Bust */}
         <div
           className={`absolute inset-0 rounded-full blur-[100px] transition-all duration-700 pointer-events-none ${
             isCircuitLocked
               ? 'opacity-80 bg-[#00E599]/35 scale-105'
-              : isHoveringHero || isRevealing
+              : isHoveringHero
               ? 'opacity-35 bg-[#10B981]/22 scale-100'
               : 'opacity-20 bg-[#10B981]/12 scale-95'
           }`}

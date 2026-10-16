@@ -93,30 +93,29 @@ body.custom-cursor-active * {
 
 .cursor span {
   position: absolute;
-  width: 32px;
-  height: 32px;
-  border: 1.5px solid rgba(255, 255, 255, 0.85);
-  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 9999px;
+  background: transparent;
   transform: translate(-50%, -50%);
-  transition: width 0.2s cubic-bezier(0.16, 1, 0.3, 1), height 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 0.2s ease, width 0.2s ease, height 0.2s ease;
   pointer-events: none;
-  box-shadow: 0 0 10px rgba(0, 229, 153, 0.35);
 }
 
 .cursor.hover span {
-  width: 52px;
-  height: 52px;
-  border-color: #00e599;
-  background: rgba(0, 229, 153, 0.08);
-  box-shadow: 0 0 16px rgba(0, 229, 153, 0.5);
+  width: 34px;
+  height: 34px;
+  border-color: #10B981;
+  background: transparent;
 }
 
 .cursor.target span {
-  width: 44px;
-  height: 44px;
-  border-color: #00e599;
-  border-radius: 50%;
-  box-shadow: 0 0 14px rgba(0, 229, 153, 0.45);
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 9999px;
+  background: transparent;
 }
 
 /* ========================================================
