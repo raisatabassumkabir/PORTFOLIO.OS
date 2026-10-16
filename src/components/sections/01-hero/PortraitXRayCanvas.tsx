@@ -22,28 +22,62 @@ export function PortraitXRayCanvas({
 }: PortraitXRayCanvasProps) {
   const portraitRef = useRef<HTMLDivElement | null>(null);
   const [localMouse, setLocalMouse] = useState<{ x: number; y: number } | null>(null);
+  const [teaserPos, setTeaserPos] = useState<{ x: number; y: number } | null>(null);
+  const [isTeaserActive, setIsTeaserActive] = useState(false);
+  const hasUserMoved = useRef(false);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
+      hasUserMoved.current = true;
+      setIsTeaserActive(false);
       if (!portraitRef.current) return;
       const rect = portraitRef.current.getBoundingClientRect();
-      const localX = e.clientX - rect.left;
-      const localY = e.clientY - rect.top;
-      setLocalMouse({ x: localX, y: localY });
+      setLocalMouse({
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top,
+      });
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    const handleTeaserMove = (e: Event) => {
+      if (hasUserMoved.current) return;
+      const customEvent = e as CustomEvent<{ x: number; y: number }>;
+      if (!customEvent.detail || !portraitRef.current) return;
+      const rect = portraitRef.current.getBoundingClientRect();
+      setIsTeaserActive(true);
+      setTeaserPos({
+        x: customEvent.detail.x - rect.left,
+        y: customEvent.detail.y - rect.top,
+      });
+    };
+
+    const handleTeaserEnd = () => {
+      setIsTeaserActive(false);
+      setTeaserPos(null);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    window.addEventListener('hero-teaser-move', handleTeaserMove as EventListener);
+    window.addEventListener('hero-teaser-end', handleTeaserEnd);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('hero-teaser-move', handleTeaserMove as EventListener);
+      window.removeEventListener('hero-teaser-end', handleTeaserEnd);
+    };
   }, []);
 
   const finalCyberImage = cyberImage && cyberImage.trim().length > 0 ? cyberImage : baseImage;
 
-  const localX = localMouse ? localMouse.x : -999;
-  const localY = localMouse ? localMouse.y : -999;
+  // Active mask coordinate: real cursor if user moved, else teaser position if active
+  const activePos = hasUserMoved.current ? localMouse : teaserPos || localMouse;
+  const isRevealing = isHoveringHero || isTeaserActive;
+
+  const localX = activePos ? activePos.x : -999;
+  const localY = activePos ? activePos.y : -999;
 
   const maskStyle: React.CSSProperties = isCircuitLocked
     ? { WebkitMaskImage: 'none', maskImage: 'none', opacity: 1 }
-    : isHoveringHero
+    : isRevealing && activePos
     ? {
         WebkitMaskImage: `radial-gradient(circle 145px at ${localX}px ${localY}px, rgba(0,0,0,1) 35%, rgba(0,0,0,0.6) 65%, rgba(0,0,0,0) 100%)`,
         maskImage: `radial-gradient(circle 145px at ${localX}px ${localY}px, rgba(0,0,0,1) 35%, rgba(0,0,0,0.6) 65%, rgba(0,0,0,0) 100%)`,
@@ -58,60 +92,34 @@ export function PortraitXRayCanvas({
         if (onContainerRef) onContainerRef(el);
       }}
       onClick={onToggleLock}
-      style={{
-        position: 'absolute',
-        bottom: 0,
-        left: '50%',
-        transform: 'translateX(-50%)',
-        height: '88vh',
-        width: 'auto',
-        aspectRatio: '1 / 1.15',
-        zIndex: 10,
-        pointerEvents: 'auto',
-      }}
-      className="select-none cursor-pointer flex-shrink-0"
+      className="pointer-events-auto cursor-pointer absolute bottom-0 left-1/2 z-10 flex h-[86vh] w-auto -translate-x-1/2 items-end justify-center select-none flex-shrink-0"
     >
       {/* Ambient Backlight Glow behind Bust */}
       <div
         className={`absolute inset-0 rounded-full blur-[100px] transition-all duration-700 pointer-events-none ${
           isCircuitLocked
             ? 'opacity-70 bg-[#00E599]/30 scale-105'
-            : isHoveringHero
-            ? 'opacity-40 bg-[#10B981]/25 scale-100'
+            : isHoveringHero || isTeaserActive
+            ? 'opacity-35 bg-[#10B981]/20 scale-100'
             : 'opacity-20 bg-[#10B981]/15 scale-95'
         }`}
       />
 
-      {/* Perimeter Feathering to melt outer photo edges seamlessly into #040A07 without cutting head, hair or shoulders */}
-      <div
-        className="relative w-full h-full pointer-events-none"
-        style={{
-          WebkitMaskImage:
-            'linear-gradient(to right, transparent 0%, #000 8%, #000 92%, transparent 100%), linear-gradient(to bottom, transparent 0%, #000 7%, #000 100%)',
-          maskImage:
-            'linear-gradient(to right, transparent 0%, #000 8%, #000 92%, transparent 100%), linear-gradient(to bottom, transparent 0%, #000 7%, #000 100%)',
-          WebkitMaskComposite: 'source-in',
-          maskComposite: 'intersect',
-        }}
-      >
-        {/* Bottom Layer: Human Portrait */}
-        <img
-          src={baseImage}
-          alt="Martin King - Human Portrait"
-          className="w-full h-full object-contain object-bottom select-none pointer-events-none transition-opacity duration-500"
-          style={{ opacity: isCircuitLocked ? 0 : 1 }}
-          draggable={false}
-        />
-
-        {/* Top Layer: Robotic Portrait */}
-        <img
-          src={finalCyberImage}
-          alt="Martin King - Robotic Portrait"
-          className="absolute inset-0 w-full h-full object-contain object-bottom select-none pointer-events-none"
-          style={maskStyle}
-          draggable={false}
-        />
-      </div>
+      {/* Both base and cyber images fill 100% height and align to bottom center */}
+      <img
+        src={baseImage}
+        alt="Base Portrait"
+        className="h-full w-auto max-w-none object-contain object-bottom select-none transition-opacity duration-500"
+        style={{ opacity: isCircuitLocked ? 0 : 1 }}
+        draggable={false}
+      />
+      <img
+        src={finalCyberImage}
+        alt="Robotic Cyber Portrait"
+        style={maskStyle}
+        className="absolute inset-0 h-full w-auto max-w-none object-contain object-bottom select-none"
+        draggable={false}
+      />
     </div>
   );
 }

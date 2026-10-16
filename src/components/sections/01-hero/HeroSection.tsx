@@ -49,8 +49,106 @@ export function HeroSection({ data }: HeroSectionProps) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isCircuitLocked, toggleCircuitLock]);
 
+  // Automated Onboarding Landing Teaser (glides simulated pointer across face & glasses)
+  const hasUserInteractedRef = useRef(false);
+  const isTeaserRunningRef = useRef(false);
+
+  useEffect(() => {
+    let animId: number;
+    let startTime: number | null = null;
+    const duration = 2400; // 2.4s glide across face
+
+    const startTeaserTimeout = setTimeout(() => {
+      if (hasUserInteractedRef.current || isCircuitLocked) return;
+      isTeaserRunningRef.current = true;
+      setIsHoveringHero(true);
+
+      const runTeaser = (timestamp: number) => {
+        if (hasUserInteractedRef.current || isCircuitLocked) {
+          isTeaserRunningRef.current = false;
+          return;
+        }
+
+        if (!startTime) startTime = timestamp;
+        const elapsed = timestamp - startTime;
+        const progress = Math.min(1, elapsed / duration);
+
+        // Smooth cosine ease-in-out curve
+        const ease = 0.5 - 0.5 * Math.cos(progress * Math.PI);
+
+        // Calculate face center in viewport coordinates
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        const startX = vw * 0.44; // Left eye/glasses
+        const endX = vw * 0.56;   // Right cheek/glasses
+        const currentX = startX + (endX - startX) * ease;
+        const currentY = vh * 0.385; // Eye level
+
+        // Dispatch teaser position for CustomCursor and PortraitXRayCanvas
+        window.dispatchEvent(
+          new CustomEvent('hero-teaser-move', {
+            detail: { x: currentX, y: currentY },
+          })
+        );
+
+        // Update coordinates HUD
+        const coordEl = document.getElementById('coordinates');
+        if (coordEl) {
+          coordEl.textContent = `X ${Math.round(currentX)} / Y ${Math.round(currentY)}`;
+        }
+
+        if (containerRef.current) {
+          const rect = containerRef.current.getBoundingClientRect();
+          targetPosRef.current = {
+            x: currentX - rect.left,
+            y: currentY - rect.top,
+          };
+        }
+
+        if (progress < 1) {
+          animId = requestAnimationFrame(runTeaser);
+        } else {
+          // Finish teaser and gently fade out simulated hover if user still hasn't moved
+          setTimeout(() => {
+            if (!hasUserInteractedRef.current) {
+              setIsHoveringHero(false);
+              isTeaserRunningRef.current = false;
+              window.dispatchEvent(new CustomEvent('hero-teaser-end'));
+            }
+          }, 800);
+        }
+      };
+
+      animId = requestAnimationFrame(runTeaser);
+    }, 450); // 450ms initial entrance delay
+
+    const handleUserInteraction = () => {
+      if (hasUserInteractedRef.current) return;
+      hasUserInteractedRef.current = true;
+      isTeaserRunningRef.current = false;
+      cancelAnimationFrame(animId);
+      clearTimeout(startTeaserTimeout);
+      window.dispatchEvent(new CustomEvent('hero-teaser-end'));
+    };
+
+    window.addEventListener('mousemove', handleUserInteraction, { passive: true, once: true });
+    window.addEventListener('touchstart', handleUserInteraction, { passive: true, once: true });
+    window.addEventListener('wheel', handleUserInteraction, { passive: true, once: true });
+    window.addEventListener('keydown', handleUserInteraction, { passive: true, once: true });
+
+    return () => {
+      clearTimeout(startTeaserTimeout);
+      cancelAnimationFrame(animId);
+      window.removeEventListener('mousemove', handleUserInteraction);
+      window.removeEventListener('touchstart', handleUserInteraction);
+      window.removeEventListener('wheel', handleUserInteraction);
+      window.removeEventListener('keydown', handleUserInteraction);
+    };
+  }, [isCircuitLocked]);
+
   // Track mouse coordinates relative to #home & update coordinates HUD
   const handleHeroMouseMove = (e: React.MouseEvent<HTMLElement>) => {
+    hasUserInteractedRef.current = true;
     if (!containerRef.current) return;
     const rect = containerRef.current.getBoundingClientRect();
     targetPosRef.current = {
@@ -173,7 +271,7 @@ export function HeroSection({ data }: HeroSectionProps) {
       onMouseMove={handleHeroMouseMove}
       onMouseEnter={() => setIsHoveringHero(true)}
       onMouseLeave={() => {
-        setIsHoveringHero(false);
+        if (hasUserInteractedRef.current) setIsHoveringHero(false);
       }}
       className="relative h-screen min-h-[700px] w-full flex items-center justify-between bg-[#040A07] overflow-hidden select-none scroll-mt-16 pointer-events-auto"
     >

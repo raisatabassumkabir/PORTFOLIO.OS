@@ -164,14 +164,6 @@ html, body {
   -webkit-text-stroke: 1px rgba(5, 150, 105, 0.7);
 }
 
-/* Universal Portrait Mask to Eliminate Rectangular Studio Box Edges */
-.portrait-blend-mask {
-  mix-blend-mode: lighten;
-  -webkit-mask-image: radial-gradient(ellipse 68% 72% at 50% 48%, #000 55%, transparent 96%), linear-gradient(to top, transparent 0%, #000 12%, #000 100%);
-  mask-image: radial-gradient(ellipse 68% 72% at 50% 48%, #000 55%, transparent 96%), linear-gradient(to top, transparent 0%, #000 12%, #000 100%);
-  -webkit-mask-composite: source-in;
-  mask-composite: intersect;
-}
 
 /* HUD Grid Patterns */
 .bg-grid-cyber {

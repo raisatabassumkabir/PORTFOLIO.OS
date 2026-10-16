@@ -12,6 +12,7 @@ export function CustomCursor() {
 
   const mousePos = useRef({ x: -100, y: -100 });
   const ringPos = useRef({ x: -100, y: -100 });
+  const hasUserMovedRef = useRef(false);
 
   useEffect(() => {
     // Only enable on desktop with fine pointer
@@ -23,8 +24,24 @@ export function CustomCursor() {
     document.body.classList.add('custom-cursor-active');
 
     const handlePointerMove = (e: PointerEvent) => {
+      hasUserMovedRef.current = true;
       const x = e.clientX;
       const y = e.clientY;
+      mousePos.current = { x, y };
+
+      if (!isVisible) setIsVisible(true);
+
+      if (dotRef.current) {
+        dotRef.current.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%)`;
+      }
+    };
+
+    // Auto-play onboarding teaser movement (simulated cursor glides across face)
+    const handleTeaserMove = (e: Event) => {
+      if (hasUserMovedRef.current) return;
+      const customEvent = e as CustomEvent<{ x: number; y: number }>;
+      if (!customEvent.detail) return;
+      const { x, y } = customEvent.detail;
       mousePos.current = { x, y };
 
       if (!isVisible) setIsVisible(true);
@@ -47,11 +64,14 @@ export function CustomCursor() {
       setIsHover(isHoverArea);
     };
 
-    const handlePointerLeave = () => setIsVisible(false);
+    const handlePointerLeave = () => {
+      if (hasUserMovedRef.current) setIsVisible(false);
+    };
     const handlePointerEnter = () => setIsVisible(true);
 
     window.addEventListener('pointermove', handlePointerMove, { passive: true });
     window.addEventListener('pointerover', handlePointerOver, { passive: true });
+    window.addEventListener('hero-teaser-move', handleTeaserMove as EventListener);
     document.addEventListener('pointerleave', handlePointerLeave);
     document.addEventListener('pointerenter', handlePointerEnter);
 
@@ -76,6 +96,7 @@ export function CustomCursor() {
       document.body.classList.remove('custom-cursor-active');
       window.removeEventListener('pointermove', handlePointerMove);
       window.removeEventListener('pointerover', handlePointerOver);
+      window.removeEventListener('hero-teaser-move', handleTeaserMove as EventListener);
       document.removeEventListener('pointerleave', handlePointerLeave);
       document.removeEventListener('pointerenter', handlePointerEnter);
       cancelAnimationFrame(animationFrameId);
@@ -96,4 +117,3 @@ export function CustomCursor() {
     </div>
   );
 }
-
