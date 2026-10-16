@@ -128,9 +128,9 @@ export function PortraitXRayCanvas({
       className="hero-portrait hero-portrait--reveal scene-copy hero-reveal-ready hero-reveal-active pointer-events-auto cursor-pointer absolute bottom-0 left-1/2 z-10 flex h-[88vh] w-auto -translate-x-1/2 items-end justify-center select-none flex-shrink-0"
       style={{
         WebkitMaskImage:
-          'radial-gradient(ellipse 88% 85% at 50% 55%, #000 50%, rgba(0,0,0,0.85) 70%, rgba(0,0,0,0.3) 88%, transparent 100%)',
+          'radial-gradient(ellipse 78% 74% at 50% 58%, #000 50%, rgba(0, 0, 0, 0.92) 65%, rgba(0, 0, 0, 0.4) 82%, transparent 96%)',
         maskImage:
-          'radial-gradient(ellipse 88% 85% at 50% 55%, #000 50%, rgba(0,0,0,0.85) 70%, rgba(0,0,0,0.3) 88%, transparent 100%)',
+          'radial-gradient(ellipse 78% 74% at 50% 58%, #000 50%, rgba(0, 0, 0, 0.92) 65%, rgba(0, 0, 0, 0.4) 82%, transparent 96%)',
       }}
     >
       <div className="relative flex h-full w-auto items-end justify-center">
