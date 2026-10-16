@@ -259,7 +259,7 @@ export function HeroSection({ data }: HeroSectionProps) {
     const nodeYPx = line ? line.endY : vh * (nodeYPercentages[i] ?? (0.28 + i * 0.11));
 
     const dist = Math.abs(smoothPos.y - nodeYPx);
-    const proximity = Math.max(0, 1 - dist / 180);
+    const proximity = Math.max(0, 1 - dist / 110);
     return Math.round(proximity * 100) / 100;
   });
 
@@ -289,7 +289,7 @@ export function HeroSection({ data }: HeroSectionProps) {
         }}
       />
 
-      {/* SVG Interactive Circuit Lines */}
+      {/* SVG Interactive Circuit Lines with Moving Pulse Dots */}
       <svg
         className="pointer-events-none absolute inset-0 w-full h-full z-20 overflow-visible"
         aria-hidden="true"
@@ -297,6 +297,7 @@ export function HeroSection({ data }: HeroSectionProps) {
         {lines.map((line, index) => {
           const proximity = nodeProximities[index] ?? 0;
           const isHighLit = proximity > 0.4 || isCircuitLocked;
+          const pathD = `M ${line.startX} ${line.startY} L ${line.midX1} ${line.startY} L ${line.midX2} ${line.endY} L ${line.boxLeftX} ${line.endY}`;
 
           return (
             <g
@@ -306,8 +307,7 @@ export function HeroSection({ data }: HeroSectionProps) {
                 transition: 'opacity 0.25s ease',
               }}
             >
-              {/* 3-Segment Circuit Line:
-                  Start -> Horizontal -> Angled bend -> Horizontal into HUD box */}
+              {/* 3-Segment Circuit Line */}
               <polyline
                 points={`${line.startX},${line.startY} ${line.midX1},${line.startY} ${line.midX2},${line.endY} ${line.boxLeftX},${line.endY}`}
                 fill="none"
@@ -327,10 +327,22 @@ export function HeroSection({ data }: HeroSectionProps) {
                 className={isHighLit ? 'drop-shadow-[0_0_8px_#00E599]' : ''}
               />
 
-              {/* Elbow node circle */}
+              {/* Elbow 1 circle */}
               <circle
                 cx={line.midX1}
                 cy={line.startY}
+                r={isHighLit ? 2.5 : 1.8}
+                fill={isHighLit ? '#FFFFFF' : 'rgba(98, 245, 183, 0.35)'}
+                style={{
+                  transition: 'r 0.25s ease, fill 0.25s ease',
+                }}
+                className={isHighLit ? 'drop-shadow-[0_0_6px_#00E599]' : ''}
+              />
+
+              {/* Elbow 2 circle */}
+              <circle
+                cx={line.midX2}
+                cy={line.endY}
                 r={isHighLit ? 2.5 : 1.8}
                 fill={isHighLit ? '#FFFFFF' : 'rgba(98, 245, 183, 0.35)'}
                 style={{
@@ -350,6 +362,33 @@ export function HeroSection({ data }: HeroSectionProps) {
                 }}
                 className={isHighLit ? 'drop-shadow-[0_0_6px_#00E599]' : ''}
               />
+
+              {/* Continuous Moving Data Dot 1 */}
+              <circle
+                r={isHighLit ? 3.5 : 2}
+                fill={isHighLit ? '#FFFFFF' : 'rgba(98, 245, 183, 0.7)'}
+                className={isHighLit ? 'drop-shadow-[0_0_8px_#00E599]' : ''}
+              >
+                <animateMotion
+                  path={pathD}
+                  dur={`${2.2 + index * 0.25}s`}
+                  repeatCount="indefinite"
+                />
+              </circle>
+
+              {/* Continuous Moving Data Dot 2 (Staggered offset) */}
+              <circle
+                r={isHighLit ? 2.5 : 1.6}
+                fill={isHighLit ? '#5EEAD4' : 'rgba(98, 245, 183, 0.45)'}
+                className={isHighLit ? 'drop-shadow-[0_0_6px_#00E599]' : ''}
+              >
+                <animateMotion
+                  path={pathD}
+                  dur={`${2.2 + index * 0.25}s`}
+                  begin={`${1.1 + index * 0.12}s`}
+                  repeatCount="indefinite"
+                />
+              </circle>
             </g>
           );
         })}

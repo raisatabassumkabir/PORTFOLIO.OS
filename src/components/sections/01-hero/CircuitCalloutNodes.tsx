@@ -55,14 +55,14 @@ export function CircuitCalloutNodes({
               width: '210px',
               padding: '11px 16px',
               borderRadius: '0px',
-              opacity: isLocked ? 1 : isLit ? 1 : Math.max(0.45, proximity),
+              opacity: isLocked ? 1 : isLit ? 1 : 0.22,
               transition:
                 'opacity 0.25s ease, background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease',
             }}
             className={`relative group cursor-pointer border select-none pointer-events-auto backdrop-blur-[6px] ${
               isLit
-                ? 'bg-[rgba(3,18,14,0.92)] border-[#00E599] shadow-[0_0_22px_rgba(0,229,153,0.28)] translate-x-1'
-                : 'bg-[rgba(2,10,8,0.45)] border-[rgba(16,185,129,0.18)] hover:border-[#00E599]/60 hover:bg-[rgba(3,18,14,0.75)]'
+                ? 'bg-[rgba(3,18,14,0.92)] border-[#00E599] shadow-[0_0_22px_rgba(0,229,153,0.3)] translate-x-1'
+                : 'bg-[rgba(2,10,8,0.35)] border-[rgba(16,185,129,0.12)] hover:border-[#00E599]/60 hover:bg-[rgba(3,18,14,0.75)]'
             }`}
           >
             <div className="flex items-center gap-3">

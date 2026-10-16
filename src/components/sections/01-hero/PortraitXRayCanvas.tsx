@@ -12,6 +12,13 @@ interface PortraitXRayCanvasProps {
   onContainerRef?: (el: HTMLDivElement | null) => void;
 }
 
+interface TrailPoint {
+  x: number;
+  y: number;
+  age: number;
+  radius: number;
+}
+
 export function PortraitXRayCanvas({
   baseImage,
   cyberImage,
@@ -21,21 +28,54 @@ export function PortraitXRayCanvas({
   onContainerRef,
 }: PortraitXRayCanvasProps) {
   const portraitRef = useRef<HTMLDivElement | null>(null);
-  const [localMouse, setLocalMouse] = useState<{ x: number; y: number } | null>(null);
-  const [teaserPos, setTeaserPos] = useState<{ x: number; y: number } | null>(null);
-  const [isTeaserActive, setIsTeaserActive] = useState(false);
+  const [trail, setTrail] = useState<TrailPoint[]>([]);
+  const trailRef = useRef<TrailPoint[]>([]);
+  const lastPosRef = useRef<{ x: number; y: number } | null>(null);
   const hasUserMoved = useRef(false);
+
+  const addTrailPoint = (x: number, y: number) => {
+    const last = lastPosRef.current;
+    if (last) {
+      const dx = x - last.x;
+      const dy = y - last.y;
+      const dist = Math.hypot(dx, dy);
+      const steps = Math.min(8, Math.max(1, Math.floor(dist / 24)));
+      for (let s = 1; s <= steps; s++) {
+        const t = s / steps;
+        trailRef.current.push({
+          x: Math.round(last.x + dx * t),
+          y: Math.round(last.y + dy * t),
+          age: 1.0,
+          radius: 140,
+        });
+      }
+    } else {
+      trailRef.current.push({
+        x: Math.round(x),
+        y: Math.round(y),
+        age: 1.0,
+        radius: 140,
+      });
+    }
+    lastPosRef.current = { x, y };
+
+    if (trailRef.current.length > 18) {
+      trailRef.current = trailRef.current.slice(-18);
+    }
+  };
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       hasUserMoved.current = true;
-      setIsTeaserActive(false);
       if (!portraitRef.current) return;
       const rect = portraitRef.current.getBoundingClientRect();
-      setLocalMouse({
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top,
-      });
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      if (x >= -150 && x <= rect.width + 150 && y >= -150 && y <= rect.height + 150) {
+        addTrailPoint(x, y);
+      } else {
+        lastPosRef.current = null;
+      }
     };
 
     const handleTeaserMove = (e: Event) => {
@@ -43,38 +83,47 @@ export function PortraitXRayCanvas({
       const customEvent = e as CustomEvent<{ x: number; y: number }>;
       if (!customEvent.detail || !portraitRef.current) return;
       const rect = portraitRef.current.getBoundingClientRect();
-      setIsTeaserActive(true);
-      setTeaserPos({
-        x: customEvent.detail.x - rect.left,
-        y: customEvent.detail.y - rect.top,
-      });
+      const x = customEvent.detail.x - rect.left;
+      const y = customEvent.detail.y - rect.top;
+      addTrailPoint(x, y);
     };
 
     const handleTeaserEnd = () => {
-      setIsTeaserActive(false);
-      setTeaserPos(null);
+      lastPosRef.current = null;
     };
 
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
     window.addEventListener('hero-teaser-move', handleTeaserMove as EventListener);
     window.addEventListener('hero-teaser-end', handleTeaserEnd);
 
+    let animId: number;
+    let running = true;
+    const loop = () => {
+      if (!running) return;
+      if (trailRef.current.length > 0) {
+        trailRef.current.forEach((p) => {
+          p.age *= 0.91; // Smooth decay over ~450ms
+        });
+        trailRef.current = trailRef.current.filter((p) => p.age > 0.04);
+        setTrail([...trailRef.current]);
+      } else if (trail.length > 0) {
+        setTrail([]);
+      }
+      animId = requestAnimationFrame(loop);
+    };
+    animId = requestAnimationFrame(loop);
+
     return () => {
+      running = false;
+      cancelAnimationFrame(animId);
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('hero-teaser-move', handleTeaserMove as EventListener);
       window.removeEventListener('hero-teaser-end', handleTeaserEnd);
     };
-  }, []);
+  }, [trail.length]);
 
   const isCustomCyber = Boolean(cyberImage && cyberImage.trim().length > 0 && cyberImage !== baseImage);
   const finalCyberImage = isCustomCyber ? cyberImage! : baseImage;
-
-  // Active mask coordinate: real cursor if user moved, else teaser position if active
-  const activePos = hasUserMoved.current ? localMouse : teaserPos || localMouse;
-  const isRevealing = isHoveringHero || isTeaserActive;
-
-  const localX = activePos ? activePos.x : -999;
-  const localY = activePos ? activePos.y : -999;
 
   const maskStyle: React.CSSProperties = isCircuitLocked
     ? {
@@ -85,10 +134,20 @@ export function PortraitXRayCanvas({
           ? 'none'
           : 'brightness(1.15) contrast(1.4) hue-rotate(145deg) saturate(2.5)',
       }
-    : isRevealing && activePos
+    : trail.length > 0
     ? {
-        WebkitMaskImage: `radial-gradient(circle 145px at ${localX}px ${localY}px, rgba(0,0,0,1) 35%, rgba(0,0,0,0.6) 65%, rgba(0,0,0,0) 100%)`,
-        maskImage: `radial-gradient(circle 145px at ${localX}px ${localY}px, rgba(0,0,0,1) 35%, rgba(0,0,0,0.6) 65%, rgba(0,0,0,0) 100%)`,
+        WebkitMaskImage: trail
+          .map(
+            (p) =>
+              `radial-gradient(circle ${Math.round(p.radius * (0.85 + 0.15 * p.age))}px at ${p.x}px ${p.y}px, rgba(0,0,0,${p.age.toFixed(2)}) 35%, rgba(0,0,0,${(p.age * 0.45).toFixed(2)}) 65%, transparent 100%)`
+          )
+          .join(', '),
+        maskImage: trail
+          .map(
+            (p) =>
+              `radial-gradient(circle ${Math.round(p.radius * (0.85 + 0.15 * p.age))}px at ${p.x}px ${p.y}px, rgba(0,0,0,${p.age.toFixed(2)}) 35%, rgba(0,0,0,${(p.age * 0.45).toFixed(2)}) 65%, transparent 100%)`
+          )
+          .join(', '),
         opacity: 1,
         filter: isCustomCyber
           ? 'none'
@@ -126,11 +185,28 @@ export function PortraitXRayCanvas({
           className={`absolute inset-0 rounded-full blur-[100px] transition-all duration-700 pointer-events-none ${
             isCircuitLocked
               ? 'opacity-80 bg-[#00E599]/35 scale-105'
-              : isHoveringHero || isTeaserActive
+              : trail.length > 0 || isHoveringHero
               ? 'opacity-40 bg-[#10B981]/25 scale-100'
               : 'opacity-25 bg-[#082824]/60 scale-95'
           }`}
         />
+
+        {/* Ambient Emerald Fluid Ribbon Trail behind bust */}
+        {!isCircuitLocked && trail.length > 1 && (
+          <svg
+            className="pointer-events-none absolute inset-0 w-full h-full overflow-visible"
+            style={{ filter: 'blur(35px)' }}
+          >
+            <path
+              d={`M ${trail[0].x} ${trail[0].y} ` + trail.slice(1).map((p) => `L ${p.x} ${p.y}`).join(' ')}
+              fill="none"
+              stroke="rgba(16, 185, 129, 0.22)"
+              strokeWidth="150"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        )}
 
         {/* Both base and cyber images fill 100% height and align to bottom center */}
         <img
