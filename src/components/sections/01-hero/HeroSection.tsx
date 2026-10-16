@@ -251,6 +251,7 @@ export function HeroSection({ data }: HeroSectionProps) {
   // Calculate proximity intensity for each node & line based on smoothPos.y
   const nodeProximities: number[] = data.circuitNodes.map((node, i) => {
     if (isCircuitLocked) return 1;
+    if (!isHoveringHero) return 0;
     if (activeHoveredNode === node.id) return 1;
 
     const line = lines[i];
@@ -258,7 +259,7 @@ export function HeroSection({ data }: HeroSectionProps) {
     const nodeYPx = line ? line.endY : vh * (nodeYPercentages[i] ?? (0.28 + i * 0.11));
 
     const dist = Math.abs(smoothPos.y - nodeYPx);
-    const proximity = isCircuitLocked ? 1 : Math.max(0.12, 1 - dist / 180);
+    const proximity = Math.max(0, 1 - dist / 180);
     return Math.round(proximity * 100) / 100;
   });
 
@@ -290,36 +291,37 @@ export function HeroSection({ data }: HeroSectionProps) {
         aria-hidden="true"
       >
         {lines.map((line, index) => {
-          const proximity = nodeProximities[index] ?? 0.12;
+          const proximity = nodeProximities[index] ?? 0;
           const isHighLit = proximity > 0.4 || isCircuitLocked;
 
           return (
-            <g key={line.id} style={{ opacity: proximity, transition: 'opacity 0.15s ease' }}>
+            <g
+              key={line.id}
+              style={{
+                opacity: isCircuitLocked ? 1 : isHighLit ? Math.max(0.65, proximity) : 0.08,
+                transition: 'opacity 0.25s ease',
+              }}
+            >
               {/* 3-Segment Circuit Line:
                   Start -> Horizontal -> Angled bend -> Horizontal into HUD box */}
               <polyline
                 points={`${line.startX},${line.startY} ${line.midX1},${line.startY} ${line.midX2},${line.endY} ${line.boxLeftX},${line.endY}`}
                 fill="none"
-                stroke={isHighLit ? '#34D399' : 'rgba(16, 185, 129, 0.35)'}
-                strokeWidth={isHighLit ? 1.5 : 1}
+                stroke={isHighLit ? '#34D399' : 'rgba(16, 185, 129, 0.2)'}
+                strokeWidth={isHighLit ? 1.5 : 0.75}
               />
 
-              {/* Glowing 3.5px cyan-emerald circle at (startX, startY) */}
+              {/* Start anchor circle on portrait - strictly invisible (opacity 0, radius 0) when resting */}
               <circle
                 cx={line.startX}
                 cy={line.startY}
-                r={3.5}
+                r={isHighLit ? 2.5 : 0}
                 fill="#34D399"
+                style={{
+                  opacity: isHighLit ? 1 : 0,
+                  transition: 'opacity 0.25s ease, r 0.25s ease',
+                }}
                 className={isHighLit ? 'drop-shadow-[0_0_8px_#34D399]' : ''}
-              />
-
-              {/* Second 3px circle at (midX1, startY) */}
-              <circle
-                cx={line.midX1}
-                cy={line.startY}
-                r={3}
-                fill="#34D399"
-                className={isHighLit ? 'drop-shadow-[0_0_6px_#34D399]' : ''}
               />
             </g>
           );

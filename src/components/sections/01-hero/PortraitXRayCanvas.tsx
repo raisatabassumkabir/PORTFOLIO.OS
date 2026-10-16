@@ -66,7 +66,8 @@ export function PortraitXRayCanvas({
     };
   }, []);
 
-  const finalCyberImage = cyberImage && cyberImage.trim().length > 0 ? cyberImage : baseImage;
+  const isCustomCyber = Boolean(cyberImage && cyberImage.trim().length > 0 && cyberImage !== baseImage);
+  const finalCyberImage = isCustomCyber ? cyberImage! : baseImage;
 
   // Active mask coordinate: real cursor if user moved, else teaser position if active
   const activePos = hasUserMoved.current ? localMouse : teaserPos || localMouse;
@@ -76,12 +77,22 @@ export function PortraitXRayCanvas({
   const localY = activePos ? activePos.y : -999;
 
   const maskStyle: React.CSSProperties = isCircuitLocked
-    ? { WebkitMaskImage: 'none', maskImage: 'none', opacity: 1 }
+    ? {
+        WebkitMaskImage: 'none',
+        maskImage: 'none',
+        opacity: 1,
+        filter: isCustomCyber
+          ? 'none'
+          : 'brightness(1.15) contrast(1.4) hue-rotate(145deg) saturate(2.5)',
+      }
     : isRevealing && activePos
     ? {
         WebkitMaskImage: `radial-gradient(circle 145px at ${localX}px ${localY}px, rgba(0,0,0,1) 35%, rgba(0,0,0,0.6) 65%, rgba(0,0,0,0) 100%)`,
         maskImage: `radial-gradient(circle 145px at ${localX}px ${localY}px, rgba(0,0,0,1) 35%, rgba(0,0,0,0.6) 65%, rgba(0,0,0,0) 100%)`,
         opacity: 1,
+        filter: isCustomCyber
+          ? 'none'
+          : 'brightness(1.15) contrast(1.4) hue-rotate(145deg) saturate(2.5)',
       }
     : { opacity: 0 };
 
@@ -93,33 +104,50 @@ export function PortraitXRayCanvas({
       }}
       onClick={onToggleLock}
       className="pointer-events-auto cursor-pointer absolute bottom-0 left-1/2 z-10 flex h-[86vh] w-auto -translate-x-1/2 items-end justify-center select-none flex-shrink-0"
+      style={{
+        WebkitMaskImage:
+          'linear-gradient(to right, transparent 0%, #000 12%, #000 88%, transparent 100%)',
+        maskImage:
+          'linear-gradient(to right, transparent 0%, #000 12%, #000 88%, transparent 100%)',
+      }}
     >
-      {/* Ambient Backlight Glow behind Bust */}
+      {/* Inner container applying vertical top-fade mask with zero bottom clipping */}
       <div
-        className={`absolute inset-0 rounded-full blur-[100px] transition-all duration-700 pointer-events-none ${
-          isCircuitLocked
-            ? 'opacity-70 bg-[#00E599]/30 scale-105'
-            : isHoveringHero || isTeaserActive
-            ? 'opacity-35 bg-[#10B981]/20 scale-100'
-            : 'opacity-20 bg-[#10B981]/15 scale-95'
-        }`}
-      />
+        className="relative flex h-full w-auto items-end justify-center"
+        style={{
+          WebkitMaskImage:
+            'linear-gradient(to bottom, transparent 0%, #000 8%, #000 100%)',
+          maskImage:
+            'linear-gradient(to bottom, transparent 0%, #000 8%, #000 100%)',
+        }}
+      >
+        {/* Ambient Backlight Glow behind Bust */}
+        <div
+          className={`absolute inset-0 rounded-full blur-[100px] transition-all duration-700 pointer-events-none ${
+            isCircuitLocked
+              ? 'opacity-70 bg-[#00E599]/30 scale-105'
+              : isHoveringHero || isTeaserActive
+              ? 'opacity-35 bg-[#10B981]/20 scale-100'
+              : 'opacity-20 bg-[#10B981]/15 scale-95'
+          }`}
+        />
 
-      {/* Both base and cyber images fill 100% height and align to bottom center */}
-      <img
-        src={baseImage}
-        alt="Base Portrait"
-        className="h-full w-auto max-w-none object-contain object-bottom select-none transition-opacity duration-500"
-        style={{ opacity: isCircuitLocked ? 0 : 1 }}
-        draggable={false}
-      />
-      <img
-        src={finalCyberImage}
-        alt="Robotic Cyber Portrait"
-        style={maskStyle}
-        className="absolute inset-0 h-full w-auto max-w-none object-contain object-bottom select-none"
-        draggable={false}
-      />
+        {/* Both base and cyber images fill 100% height and align to bottom center */}
+        <img
+          src={baseImage}
+          alt="Base Portrait"
+          className="h-full w-auto max-w-none object-contain object-bottom select-none transition-opacity duration-500"
+          style={{ opacity: isCircuitLocked ? 0 : 1 }}
+          draggable={false}
+        />
+        <img
+          src={finalCyberImage}
+          alt="Robotic Cyber Portrait"
+          style={maskStyle}
+          className="absolute inset-0 h-full w-auto max-w-none object-contain object-bottom select-none"
+          draggable={false}
+        />
+      </div>
     </div>
   );
 }
