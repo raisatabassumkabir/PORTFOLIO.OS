@@ -77,11 +77,12 @@ export function CustomCursor() {
       const target = e.target as HTMLElement | null;
       if (!target) return;
 
-      const isTargetArea = !!target.closest('#hero-reveal, .hero-portrait, [data-cursor="target"], [data-cursor="reticle"]');
+      const isPortrait = !!target.closest('#hero-reveal, .hero-portrait');
+      const isTargetArea = !isPortrait && !!target.closest('[data-cursor="target"], [data-cursor="reticle"]');
       setIsTarget(isTargetArea);
 
-      const isHoverArea = !isTargetArea && !!target.closest(
-        'a, button, [role="button"], .button, .magnetic, .hero-reveal-toggle, .hero-skill-module, .skill-access li, [data-cursor-hover], [data-skill-cell], .skill-cell, .project-card, [data-hover], .cursor-pointer, input, textarea, select, [tabindex="0"], label'
+      const isHoverArea = !isPortrait && !isTargetArea && !!target.closest(
+        'a, button, [role="button"], .button, .magnetic, .hero-reveal-toggle, .hero-skill-module, .skill-access li, [data-cursor-hover], [data-skill-cell], .skill-cell, .project-card, [data-hover], input, textarea, select, [tabindex="0"], label'
       );
       setIsHover(isHoverArea);
     };

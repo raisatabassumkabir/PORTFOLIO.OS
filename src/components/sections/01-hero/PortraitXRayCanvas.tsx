@@ -12,13 +12,6 @@ interface PortraitXRayCanvasProps {
   onContainerRef?: (el: HTMLDivElement | null) => void;
 }
 
-interface TrailPoint {
-  x: number;
-  y: number;
-  age: number;
-  radius: number;
-}
-
 export function PortraitXRayCanvas({
   baseImage,
   cyberImage,
@@ -28,105 +21,91 @@ export function PortraitXRayCanvas({
   onContainerRef,
 }: PortraitXRayCanvasProps) {
   const portraitRef = useRef<HTMLDivElement | null>(null);
-  const [trail, setTrail] = useState<TrailPoint[]>([]);
-  const trailRef = useRef<TrailPoint[]>([]);
-  const lastPosRef = useRef<{ x: number; y: number } | null>(null);
-  const hasUserMoved = useRef(false);
-
-  const addTrailPoint = (x: number, y: number) => {
-    const last = lastPosRef.current;
-    if (last) {
-      const dx = x - last.x;
-      const dy = y - last.y;
-      const dist = Math.hypot(dx, dy);
-      const steps = Math.min(8, Math.max(1, Math.floor(dist / 24)));
-      for (let s = 1; s <= steps; s++) {
-        const t = s / steps;
-        trailRef.current.push({
-          x: Math.round(last.x + dx * t),
-          y: Math.round(last.y + dy * t),
-          age: 1.0,
-          radius: 140,
-        });
-      }
-    } else {
-      trailRef.current.push({
-        x: Math.round(x),
-        y: Math.round(y),
-        age: 1.0,
-        radius: 140,
-      });
-    }
-    lastPosRef.current = { x, y };
-
-    if (trailRef.current.length > 18) {
-      trailRef.current = trailRef.current.slice(-18);
-    }
-  };
+  const targetPosRef = useRef({ x: 300, y: 220 });
+  const currentPosRef = useRef({ x: 300, y: 220 });
+  const [pointerPos, setPointerPos] = useState({ x: 300, y: 220 });
+  const [isRevealing, setIsRevealing] = useState(false);
+  const hasUserMovedRef = useRef(false);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      hasUserMoved.current = true;
+      hasUserMovedRef.current = true;
       if (!portraitRef.current) return;
       const rect = portraitRef.current.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
-      // Track reveal exclusively when cursor is over or directly brushing the portrait
-      if (x >= -40 && x <= rect.width + 40 && y >= -40 && y <= rect.height + 40) {
-        addTrailPoint(x, y);
-      } else {
-        lastPosRef.current = null;
-      }
+
+      targetPosRef.current = { x, y };
+      setIsRevealing(true);
     };
 
     const handleTeaserMove = (e: Event) => {
-      if (hasUserMoved.current) return;
+      if (hasUserMovedRef.current) return;
       const customEvent = e as CustomEvent<{ x: number; y: number }>;
       if (!customEvent.detail || !portraitRef.current) return;
       const rect = portraitRef.current.getBoundingClientRect();
       const x = customEvent.detail.x - rect.left;
       const y = customEvent.detail.y - rect.top;
-      addTrailPoint(x, y);
+      targetPosRef.current = { x, y };
+      setIsRevealing(true);
     };
 
     const handleTeaserEnd = () => {
-      lastPosRef.current = null;
+      if (!hasUserMovedRef.current) {
+        setIsRevealing(false);
+      }
+    };
+
+    const handleMouseLeave = () => {
+      if (hasUserMovedRef.current) {
+        setIsRevealing(false);
+      }
     };
 
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
     window.addEventListener('hero-teaser-move', handleTeaserMove as EventListener);
     window.addEventListener('hero-teaser-end', handleTeaserEnd);
+    document.addEventListener('mouseleave', handleMouseLeave);
 
     let animId: number;
-    let running = true;
     const loop = () => {
-      if (!running) return;
-      if (trailRef.current.length > 0) {
-        trailRef.current.forEach((p) => {
-          p.age *= 0.91; // Smooth decay over ~450ms
+      const dx = targetPosRef.current.x - currentPosRef.current.x;
+      const dy = targetPosRef.current.y - currentPosRef.current.y;
+      if (Math.abs(dx) > 0.1 || Math.abs(dy) > 0.1) {
+        currentPosRef.current.x += dx * 0.22;
+        currentPosRef.current.y += dy * 0.22;
+        setPointerPos({
+          x: Math.round(currentPosRef.current.x),
+          y: Math.round(currentPosRef.current.y),
         });
-        trailRef.current = trailRef.current.filter((p) => p.age > 0.04);
-        setTrail([...trailRef.current]);
-      } else if (trail.length > 0) {
-        setTrail([]);
       }
       animId = requestAnimationFrame(loop);
     };
     animId = requestAnimationFrame(loop);
 
     return () => {
-      running = false;
       cancelAnimationFrame(animId);
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('hero-teaser-move', handleTeaserMove as EventListener);
       window.removeEventListener('hero-teaser-end', handleTeaserEnd);
+      document.removeEventListener('mouseleave', handleMouseLeave);
     };
-  }, [trail.length]);
+  }, []);
+
+  // Sync revealing state with hero hover
+  useEffect(() => {
+    if (isHoveringHero) {
+      setIsRevealing(true);
+    } else if (hasUserMovedRef.current) {
+      setIsRevealing(false);
+    }
+  }, [isHoveringHero]);
 
   const isCustomCyber = Boolean(cyberImage && cyberImage.trim().length > 0 && cyberImage !== baseImage);
   const finalCyberImage = isCustomCyber ? cyberImage! : baseImage;
 
-  const maskStyle: React.CSSProperties = isCircuitLocked
+  // Seamless soft-feathered spotlight mask (zero borders, pure feathered alpha-mask)
+  const cyberMaskStyle: React.CSSProperties = isCircuitLocked
     ? {
         WebkitMaskImage: 'none',
         maskImage: 'none',
@@ -135,62 +114,49 @@ export function PortraitXRayCanvas({
           ? 'none'
           : 'brightness(1.15) contrast(1.4) hue-rotate(145deg) saturate(2.5)',
       }
-    : trail.length > 0
-    ? {
-        WebkitMaskImage: trail
-          .map(
-            (p) =>
-              `radial-gradient(circle ${Math.round(p.radius * (0.85 + 0.15 * p.age))}px at ${p.x}px ${p.y}px, rgba(0,0,0,${p.age.toFixed(2)}) 35%, rgba(0,0,0,${(p.age * 0.45).toFixed(2)}) 65%, transparent 100%)`
-          )
-          .join(', '),
-        maskImage: trail
-          .map(
-            (p) =>
-              `radial-gradient(circle ${Math.round(p.radius * (0.85 + 0.15 * p.age))}px at ${p.x}px ${p.y}px, rgba(0,0,0,${p.age.toFixed(2)}) 35%, rgba(0,0,0,${(p.age * 0.45).toFixed(2)}) 65%, transparent 100%)`
-          )
-          .join(', '),
-        opacity: 1,
+    : {
+        WebkitMaskImage: `radial-gradient(ellipse 280px 140px at ${pointerPos.x}px ${pointerPos.y}px, rgba(0,0,0,1) 20%, rgba(0,0,0,0.5) 55%, transparent 100%)`,
+        maskImage: `radial-gradient(ellipse 280px 140px at ${pointerPos.x}px ${pointerPos.y}px, rgba(0,0,0,1) 20%, rgba(0,0,0,0.5) 55%, transparent 100%)`,
+        opacity: isRevealing ? 1 : 0,
+        transition: 'opacity 0.4s ease',
         filter: isCustomCyber
           ? 'none'
           : 'brightness(1.15) contrast(1.4) hue-rotate(145deg) saturate(2.5)',
-      }
-    : { opacity: 0 };
+      };
 
   return (
     <figure
       id="hero-reveal"
-      data-cursor="target"
       ref={(el) => {
         portraitRef.current = el as HTMLDivElement | null;
         if (onContainerRef) onContainerRef(el as HTMLDivElement | null);
       }}
       onClick={onToggleLock}
       className="hero-portrait hero-portrait--reveal scene-copy hero-reveal-ready hero-reveal-active pointer-events-auto cursor-pointer absolute bottom-0 left-1/2 z-10 flex h-[88vh] w-auto -translate-x-1/2 items-end justify-center select-none flex-shrink-0"
-      style={{
-        WebkitMaskImage:
-          'linear-gradient(to right, transparent 0%, #000 12%, #000 88%, transparent 100%)',
-        maskImage:
-          'linear-gradient(to right, transparent 0%, #000 12%, #000 88%, transparent 100%)',
-      }}
     >
-      {/* Inner container applying vertical top-fade mask with zero bottom clipping */}
-      <div
-        className="relative flex h-full w-auto items-end justify-center"
-        style={{
-          WebkitMaskImage:
-            'linear-gradient(to bottom, transparent 0%, #000 8%, #000 100%)',
-          maskImage:
-            'linear-gradient(to bottom, transparent 0%, #000 8%, #000 100%)',
-        }}
-      >
+      <div className="relative flex h-full w-auto items-end justify-center">
+        {/* Soft, organic ambient green spotlight following cursor with ZERO borders */}
+        <div
+          className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 rounded-full blur-[48px] transition-opacity duration-300"
+          style={{
+            left: pointerPos.x,
+            top: pointerPos.y,
+            width: '360px',
+            height: '200px',
+            background:
+              'radial-gradient(ellipse at center, rgba(0, 229, 153, 0.28) 0%, rgba(16, 185, 129, 0.12) 48%, transparent 75%)',
+            opacity: isRevealing && !isCircuitLocked ? 1 : 0,
+          }}
+        />
+
         {/* Ambient Backlight Glow behind Bust */}
         <div
           className={`absolute inset-0 rounded-full blur-[100px] transition-all duration-700 pointer-events-none ${
             isCircuitLocked
               ? 'opacity-80 bg-[#00E599]/35 scale-105'
-              : trail.length > 0 || isHoveringHero
-              ? 'opacity-40 bg-[#10B981]/25 scale-100'
-              : 'opacity-25 bg-[#10B981]/15 scale-95'
+              : isHoveringHero || isRevealing
+              ? 'opacity-35 bg-[#10B981]/22 scale-100'
+              : 'opacity-20 bg-[#10B981]/12 scale-95'
           }`}
         />
 
@@ -205,7 +171,7 @@ export function PortraitXRayCanvas({
         <img
           src={finalCyberImage}
           alt="Robotic Cyber Portrait"
-          style={maskStyle}
+          style={cyberMaskStyle}
           className="absolute inset-0 h-full w-auto max-w-none object-contain object-bottom select-none"
           draggable={false}
         />

@@ -63,6 +63,8 @@ export function HeroSection({ data }: HeroSectionProps) {
       isTeaserRunningRef.current = true;
       setIsHoveringHero(true);
 
+      const duration = 2800; // 2.8s smooth intro sweep across face
+
       const runTeaser = (timestamp: number) => {
         if (hasUserInteractedRef.current || isCircuitLocked) {
           isTeaserRunningRef.current = false;
@@ -73,16 +75,25 @@ export function HeroSection({ data }: HeroSectionProps) {
         const elapsed = timestamp - startTime;
         const progress = Math.min(1, elapsed / duration);
 
-        // Smooth cosine ease-in-out curve
-        const ease = 0.5 - 0.5 * Math.cos(progress * Math.PI);
-
-        // Calculate face center in viewport coordinates
         const vw = window.innerWidth;
         const vh = window.innerHeight;
-        const startX = vw * 0.44; // Left eye/glasses
-        const endX = vw * 0.56;   // Right cheek/glasses
-        const currentX = startX + (endX - startX) * ease;
-        const currentY = vh * 0.385; // Eye level
+
+        let currentX: number;
+        let currentY: number;
+
+        if (progress < 0.6) {
+          // Phase 1: Glide smoothly from left eye across glasses to right cheek
+          const p = progress / 0.6;
+          const ease = 0.5 - 0.5 * Math.cos(p * Math.PI);
+          currentX = vw * 0.43 + (vw * 0.57 - vw * 0.43) * ease;
+          currentY = vh * 0.36 + (vh * 0.39 - vh * 0.36) * ease;
+        } else {
+          // Phase 2: Glide back to center face (eyes & nose)
+          const p = (progress - 0.6) / 0.4;
+          const ease = 0.5 - 0.5 * Math.cos(p * Math.PI);
+          currentX = vw * 0.57 + (vw * 0.50 - vw * 0.57) * ease;
+          currentY = vh * 0.39 + (vh * 0.375 - vh * 0.39) * ease;
+        }
 
         // Dispatch teaser position for CustomCursor and PortraitXRayCanvas
         window.dispatchEvent(
@@ -108,19 +119,13 @@ export function HeroSection({ data }: HeroSectionProps) {
         if (progress < 1) {
           animId = requestAnimationFrame(runTeaser);
         } else {
-          // Finish teaser and gently fade out simulated hover if user still hasn't moved
-          setTimeout(() => {
-            if (!hasUserInteractedRef.current) {
-              setIsHoveringHero(false);
-              isTeaserRunningRef.current = false;
-              window.dispatchEvent(new CustomEvent('hero-teaser-end'));
-            }
-          }, 800);
+          // Teaser complete - keep gently revealed on face until user interacts
+          isTeaserRunningRef.current = false;
         }
       };
 
       animId = requestAnimationFrame(runTeaser);
-    }, 450); // 450ms initial entrance delay
+    }, 400); // 400ms entrance delay
 
     const handleUserInteraction = () => {
       if (hasUserInteractedRef.current) return;

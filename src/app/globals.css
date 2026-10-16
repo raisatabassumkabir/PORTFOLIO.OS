@@ -93,36 +93,30 @@ body.custom-cursor-active * {
 
 .cursor span {
   position: absolute;
-  width: 34px;
-  height: 34px;
-  border: 1px solid rgba(255, 255, 255, 0.7);
+  width: 32px;
+  height: 32px;
+  border: 1.5px solid rgba(255, 255, 255, 0.85);
   border-radius: 50%;
   transform: translate(-50%, -50%);
-  transition: width 0.2s cubic-bezier(0.16, 1, 0.3, 1), height 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-radius 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+  transition: width 0.2s cubic-bezier(0.16, 1, 0.3, 1), height 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
   pointer-events: none;
+  box-shadow: 0 0 10px rgba(0, 229, 153, 0.35);
 }
 
 .cursor.hover span {
-  width: 54px;
-  height: 54px;
-  border-color: var(--green);
-  background: rgba(98, 245, 183, 0.08);
+  width: 52px;
+  height: 52px;
+  border-color: #00e599;
+  background: rgba(0, 229, 153, 0.08);
+  box-shadow: 0 0 16px rgba(0, 229, 153, 0.5);
 }
 
 .cursor.target span {
-  border-radius: 2px;
-  border-width: 0;
-  width: 68px;
-  height: 68px;
-  background:
-    linear-gradient(var(--green), var(--green)) left top / 12px 1px no-repeat,
-    linear-gradient(var(--green), var(--green)) left top / 1px 12px no-repeat,
-    linear-gradient(var(--green), var(--green)) right top / 12px 1px no-repeat,
-    linear-gradient(var(--green), var(--green)) right top / 1px 12px no-repeat,
-    linear-gradient(var(--green), var(--green)) left bottom / 12px 1px no-repeat,
-    linear-gradient(var(--green), var(--green)) left bottom / 1px 12px no-repeat,
-    linear-gradient(var(--green), var(--green)) right bottom / 12px 1px no-repeat,
-    linear-gradient(var(--green), var(--green)) right bottom / 1px 12px no-repeat;
+  width: 44px;
+  height: 44px;
+  border-color: #00e599;
+  border-radius: 50%;
+  box-shadow: 0 0 14px rgba(0, 229, 153, 0.45);
 }
 
 /* ========================================================
