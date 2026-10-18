@@ -84,7 +84,7 @@ export function TopNavbar() {
     bg: 'rgba(2, 7, 6, 0.85)',
     border: 'rgba(117, 255, 213, 0.18)',
     text: '#F3F5F4',
-    muted: '#759087',
+    muted: '#526E65',
     accentColor: '#10B981',
     isLight: false,
   };
@@ -150,12 +150,12 @@ export function TopNavbar() {
   return (
     <>
       <header
-        className={`fixed left-4 right-4 sm:left-8 sm:right-8 lg:left-9 lg:right-9 top-3.5 sm:top-5 h-[62px] sm:h-[68px] z-[70] transition-all duration-500 border rounded-none backdrop-blur-xl ${
+        className={`fixed left-4 right-4 sm:left-8 sm:right-8 lg:left-9 lg:right-9 top-3.5 sm:top-5 h-[62px] sm:h-[68px] z-[70] transition-all duration-500 border rounded-none ${
           activeSection === 6
             ? 'opacity-0 -translate-y-[150%] pointer-events-none'
             : activeSection === 1 && scrollProgress < 2
-            ? 'bg-transparent border-transparent pointer-events-auto'
-            : 'shadow-[0_12px_40px_rgba(0,0,0,0.08)] pointer-events-auto'
+            ? 'bg-transparent border-transparent backdrop-blur-none shadow-none pointer-events-auto'
+            : 'backdrop-blur-xl shadow-[0_12px_40px_rgba(0,0,0,0.08)] pointer-events-auto'
         }`}
         style={{
           backgroundColor: activeSection === 1 && scrollProgress < 2 ? 'transparent' : navStyle.bg,
@@ -164,32 +164,32 @@ export function TopNavbar() {
         }}
       >
         <div className="w-full h-full flex items-center justify-between px-4 sm:px-6 lg:px-8 pointer-events-auto relative">
-          {/* Top-left Brand Monogram: TB / MK with vertical accent bar */}
+          {/* Top-left Brand Monogram: TB. with emerald accent dot */}
           <a
             href="#home"
             onClick={(e) => handleNavClick(e, 1)}
-            className="flex items-center cursor-pointer select-none group pointer-events-auto"
+            className="flex items-baseline cursor-pointer select-none group pointer-events-auto"
             aria-label={`${monogram} Home`}
           >
             <span
-              className="font-heading font-black text-2xl tracking-[-0.04em] transition-colors duration-300 leading-none"
+              className="font-heading font-black text-xl sm:text-[22px] tracking-tight transition-colors duration-300 leading-none"
               style={{ color: navStyle.text }}
             >
               {brandPrefix}
             </span>
-            <b
-              className="font-heading font-black text-2xl transition-colors duration-300 ml-0.5 leading-none"
+            <span
+              className="font-heading font-black text-xl sm:text-[22px] transition-colors duration-300 leading-none"
               style={{
                 color: navStyle.accentColor,
                 textShadow: navStyle.isLight ? 'none' : `0 0 10px ${navStyle.accentColor}80`,
               }}
             >
-              |
-            </b>
+              .
+            </span>
           </a>
 
           {/* Desktop Nav Items Centered via mx-auto */}
-          <nav className="hidden md:flex items-center gap-6 lg:gap-9 mx-auto pointer-events-auto">
+          <nav className="hidden md:flex items-center gap-7 lg:gap-9 mx-auto pointer-events-auto">
             {navItems.map((item) => {
               const isActive = activeSection === item.index;
               return (
@@ -197,16 +197,16 @@ export function TopNavbar() {
                   key={item.label}
                   href={item.href}
                   onClick={(e) => handleNavClick(e, item.index)}
-                  className="relative font-mono-hud text-[11px] tracking-[0.18em] transition-all duration-200 py-1 cursor-pointer select-none pointer-events-auto uppercase"
+                  className="relative inline-flex flex-col items-center justify-center font-mono-hud text-[11px] tracking-[0.18em] transition-all duration-200 py-1 cursor-pointer select-none pointer-events-auto uppercase hover:text-white"
                   style={{
                     color: isActive ? navStyle.text : navStyle.muted,
-                    fontWeight: isActive ? 700 : 500,
+                    fontWeight: isActive ? 600 : 500,
                   }}
                 >
-                  {item.label}
+                  <span className="leading-none">{item.label}</span>
                   {isActive && (
                     <span
-                      className="absolute -bottom-2 left-0 right-0 h-[1.5px] rounded-full transition-all duration-300"
+                      className="absolute -bottom-[1px] left-0 right-0 h-[1.5px] rounded-full transition-all duration-300"
                       style={{
                         backgroundColor: navStyle.accentColor,
                         boxShadow: navStyle.isLight ? 'none' : `0 0 6px ${navStyle.accentColor}99`,
@@ -222,8 +222,8 @@ export function TopNavbar() {
           <div className="flex items-center gap-4 pointer-events-auto">
             <button
               onClick={openBriefModal}
-              className="group flex items-center gap-2 font-mono-hud text-[11px] font-medium tracking-[0.14em] uppercase transition-all duration-200 cursor-pointer pointer-events-auto"
-              style={{ color: navStyle.text }}
+              className="group flex items-center gap-2 font-mono-hud text-[11px] font-medium tracking-[0.14em] uppercase transition-all duration-200 cursor-pointer pointer-events-auto hover:text-white"
+              style={{ color: navStyle.isLight ? navStyle.text : 'rgba(243, 245, 244, 0.78)' }}
             >
               <span
                 className="w-1.5 h-1.5 rounded-full flex-shrink-0 transition-transform duration-300 group-hover:scale-125"
@@ -232,7 +232,7 @@ export function TopNavbar() {
                   boxShadow: navStyle.isLight ? 'none' : `0 0 8px ${navStyle.accentColor}`,
                 }}
               />
-              <span>LET&apos;S CONNECT</span>
+              <span className="leading-none">LET&apos;S CONNECT</span>
             </button>
 
             {/* Mobile menu toggle */}
@@ -247,22 +247,24 @@ export function TopNavbar() {
           </div>
         </div>
 
-        {/* Dynamic Accent / Progress Line along bottom border of navbar */}
-        <div
-          className="absolute -bottom-[1px] left-0 right-0 h-[1.5px] overflow-hidden pointer-events-none"
-          style={{
-            backgroundColor: `${navStyle.accentColor}25`,
-          }}
-        >
+        {/* Dynamic Accent / Progress Line along bottom border of navbar when scrolled */}
+        {scrollProgress >= 2 && (
           <div
-            className="h-full transition-all duration-150"
+            className="absolute -bottom-[1px] left-0 right-0 h-[1.5px] overflow-hidden pointer-events-none"
             style={{
-              width: `${Math.max(scrollProgress, activeSection === 4 ? 66 : 10)}%`,
-              background: `linear-gradient(90deg, ${navStyle.accentColor}, #54D9FF)`,
-              boxShadow: `0 0 10px ${navStyle.accentColor}`,
+              backgroundColor: `${navStyle.accentColor}25`,
             }}
-          />
-        </div>
+          >
+            <div
+              className="h-full transition-all duration-150"
+              style={{
+                width: `${scrollProgress}%`,
+                background: `linear-gradient(90deg, ${navStyle.accentColor}, #54D9FF)`,
+                boxShadow: `0 0 10px ${navStyle.accentColor}`,
+              }}
+            />
+          </div>
+        )}
       </header>
 
       {/* Mobile Drawer Menu */}
