@@ -67,21 +67,21 @@ export function ContactSection({ data }: ContactSectionProps) {
         </svg>
 
         {/* Top Header Bar inside Dark Card */}
-        <div className="relative z-20 w-full pt-4 sm:pt-6 px-6 sm:px-10 flex items-center justify-between">
+        <div className="absolute top-0 left-0 right-0 z-20 pt-8 sm:pt-9 md:pt-10 px-6 sm:px-10 flex items-center justify-between pointer-events-none">
           {/* Top-Left Brand Monogram */}
-          <div className="font-heading font-black text-2xl sm:text-3xl text-white tracking-tight select-none">
+          <div className="font-heading font-black text-2xl sm:text-3xl text-white tracking-tight select-none pointer-events-auto">
             TB<span className="text-[#bbf200]">.</span>
           </div>
 
           {/* Top-Right Availability Status */}
-          <div className="flex items-center gap-2 font-mono text-[10px] sm:text-[11px] font-bold tracking-[0.18em] text-[#bbf200] uppercase select-none">
+          <div className="flex items-center gap-2 font-mono text-[10px] sm:text-[11px] font-bold tracking-[0.18em] text-[#bbf200] uppercase select-none pointer-events-auto">
             <span className="w-2 h-2 rounded-full bg-[#bbf200] shadow-[0_0_8px_#bbf200] animate-pulse" />
             <span>AVAILABLE FOR OPPORTUNITIES</span>
           </div>
         </div>
 
         {/* Headline in Top-Center (Signature sign removed) */}
-        <div className="relative z-20 flex flex-col items-center text-center mt-2 sm:mt-3 px-4">
+        <div className="relative z-20 flex flex-col items-center text-center pt-3.5 sm:pt-4 md:pt-5 px-4">
           <p className="font-mono text-[10px] sm:text-xs font-bold text-[#bbf200] tracking-[0.24em] uppercase mb-1 sm:mb-2">
             06 // FINAL TRANSMISSION
           </p>

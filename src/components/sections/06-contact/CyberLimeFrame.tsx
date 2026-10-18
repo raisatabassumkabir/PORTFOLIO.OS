@@ -19,7 +19,7 @@ export function CyberLimeFrame({
       <svg className="absolute w-0 h-0 pointer-events-none" aria-hidden="true">
         <defs>
           <clipPath id="contact-capsule-notch" clipPathUnits="objectBoundingBox">
-            <path d="M 0.015 0.045 Q 0 0.045 0 0.065 L 0 0.945 Q 0 0.965 0.015 0.965 L 0.155 0.965 C 0.17 0.965 0.175 0.986 0.19 0.986 L 0.81 0.986 C 0.825 0.986 0.83 0.965 0.845 0.965 L 0.985 0.965 Q 1 0.965 1 0.945 L 1 0.065 Q 1 0.045 0.985 0.045 L 0.62 0.045 C 0.6 0.045 0.59 0 0.57 0 L 0.43 0 C 0.41 0 0.4 0.045 0.38 0.045 Z" />
+            <path d="M 0.025 0.045 Q 0 0.045 0 0.075 L 0 0.93 Q 0 0.96 0.025 0.96 L 0.16 0.96 C 0.175 0.96 0.18 0.986 0.195 0.986 L 0.805 0.986 C 0.82 0.986 0.825 0.96 0.84 0.96 L 0.975 0.96 Q 1 0.96 1 0.93 L 1 0.075 Q 1 0.045 0.975 0.045 L 0.62 0.045 C 0.6 0.045 0.59 0 0.57 0 L 0.43 0 C 0.41 0 0.4 0.045 0.38 0.045 Z" />
           </clipPath>
         </defs>
       </svg>
@@ -59,14 +59,14 @@ export function CyberLimeFrame({
       </div>
 
       {/* Left Bottom Tab: Copyright Text inside lime cutout */}
-      <div className="absolute bottom-1 sm:bottom-1.5 left-3 sm:left-4 md:left-5 z-20 pointer-events-auto">
+      <div className="absolute bottom-2 sm:bottom-2.5 left-5 sm:left-7 md:left-8 z-20 pointer-events-auto">
         <p className="font-mono text-[9px] sm:text-[10px] md:text-[11px] font-bold text-[#020807] tracking-wider m-0 select-none">
           {copyright}
         </p>
       </div>
 
       {/* Right Bottom Tab: LET'S BUILD Action Link inside lime cutout */}
-      <div className="absolute bottom-1 sm:bottom-1.5 right-3 sm:right-4 md:right-5 z-20 pointer-events-auto">
+      <div className="absolute bottom-2 sm:bottom-2.5 right-5 sm:right-7 md:right-8 z-20 pointer-events-auto">
         <a
           href="mailto:info.talhabadar@gmail.com"
           className="group hover:opacity-80 transition-opacity inline-flex items-center gap-1 font-mono text-[10px] sm:text-[11px] md:text-[12px] font-black text-[#020807] uppercase tracking-wider select-none"
