@@ -24,18 +24,18 @@ export function ContactSection({ data }: ContactSectionProps) {
   ];
 
   const connects = [
-    { label: 'EMAIL', href: 'mailto:contact@martinking.dev' },
-    { label: 'LINKEDIN', href: 'https://linkedin.com/in/martinking' },
-    { label: 'GITHUB', href: 'https://github.com/martinking' },
-    { label: 'CALL', href: 'https://cal.com/martinking' },
+    { label: 'EMAIL', href: 'mailto:info.talhabadar@gmail.com' },
+    { label: 'LINKEDIN', href: 'https://www.linkedin.com/in/talha-badar-85a79726a/' },
+    { label: 'GITHUB', href: 'https://github.com/talhabadar' },
+    { label: 'CALL', href: 'tel:+923335256437' },
   ];
 
   return (
     <section id="contact" className="relative w-full min-h-screen scroll-mt-0">
-      <CyberLimeFrame copyright={data.copyright || '© 2026 Martin King. All rights reserved.'} onOpenBrief={openBriefModal}>
-        {/* Subtle Background Contours */}
+      <CyberLimeFrame copyright={data.copyright || '© 2026 Talha Badar. All rights reserved.'} onOpenBrief={openBriefModal}>
+        {/* Subtle Background Contours matching live site */}
         <svg
-          className="absolute inset-0 w-full h-full opacity-15 pointer-events-none z-0"
+          className="absolute inset-0 w-full h-full opacity-20 pointer-events-none z-0"
           viewBox="0 0 1600 900"
           preserveAspectRatio="none"
           aria-hidden="true"
@@ -67,7 +67,7 @@ export function ContactSection({ data }: ContactSectionProps) {
         </svg>
 
         {/* Top Header Bar inside Dark Card */}
-        <div className="relative z-20 w-full pt-5 px-6 sm:px-10 flex items-center justify-between">
+        <div className="relative z-20 w-full pt-4 sm:pt-6 px-6 sm:px-10 flex items-center justify-between">
           {/* Top-Left Brand Monogram */}
           <div className="font-heading font-black text-2xl sm:text-3xl text-white tracking-tight select-none">
             TB<span className="text-[#bbf200]">.</span>
@@ -80,30 +80,23 @@ export function ContactSection({ data }: ContactSectionProps) {
           </div>
         </div>
 
-        {/* Headline & Signature in Top-Center */}
-        <div className="relative z-20 flex flex-col items-center text-center mt-2 px-4">
-          <p className="font-mono text-[10px] sm:text-xs font-bold text-[#bbf200] tracking-[0.22em] uppercase mb-1">
+        {/* Headline in Top-Center (Signature sign removed) */}
+        <div className="relative z-20 flex flex-col items-center text-center mt-2 sm:mt-3 px-4">
+          <p className="font-mono text-[10px] sm:text-xs font-bold text-[#bbf200] tracking-[0.24em] uppercase mb-1 sm:mb-2">
             06 // FINAL TRANSMISSION
           </p>
 
           <div className="relative">
-            {/* Handwritten Neon Signature Overlaid directly above text */}
-            <div className="absolute -top-7 sm:-top-9 left-1/2 -translate-x-1/2 w-28 sm:w-36 h-14 sm:h-16 pointer-events-none z-30 drop-shadow-[0_0_12px_rgba(187,242,0,0.8)]">
-              <Image
-                src="/assets/portrait/signature.svg"
-                alt="Signature"
-                fill
-                className="object-contain"
-                priority
-              />
-            </div>
-
-            <h2 className="font-heading font-extrabold text-4xl sm:text-6xl md:text-7xl lg:text-[5.4rem] tracking-tight leading-[0.92] select-none text-center">
-              <span className="block text-white">YOU IMAGINE,</span>
+            {/* High-Contrast Editorial Serif Headline matching reference screenshot */}
+            <h2 className="font-editorial font-black text-5xl sm:text-7xl md:text-8xl lg:text-[6.2rem] tracking-[-0.03em] leading-[0.92] select-none text-center">
+              <span className="block text-white uppercase font-black drop-shadow-[0_4px_16px_rgba(0,0,0,0.8)]">
+                YOU IMAGINE,
+              </span>
               <span
-                className="block text-transparent italic"
+                className="block font-black uppercase text-transparent italic tracking-[-0.02em]"
                 style={{
-                  WebkitTextStroke: '1.5px #bbf200',
+                  WebkitTextStroke: '2px #bbf200',
+                  textShadow: '0 0 20px rgba(187,242,0,0.3)',
                 }}
               >
                 I DELIVER.
@@ -149,32 +142,32 @@ export function ContactSection({ data }: ContactSectionProps) {
           </nav>
         </div>
 
-        {/* Developer Portrait Cutout (Centered at bottom) */}
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 z-10 pointer-events-none w-[340px] sm:w-[420px] md:w-[480px] lg:w-[520px] max-h-[64vh] flex items-end justify-center">
+        {/* Tech Logo Marquee across the bottom behind portrait */}
+        <div className="absolute bottom-16 sm:bottom-20 md:bottom-24 left-0 right-0 z-0">
+          <FloatingTechRow />
+        </div>
+
+        {/* Developer Portrait Cutout (Centered at bottom, enlarged prominent scale) */}
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 z-10 pointer-events-none w-[440px] sm:w-[540px] md:w-[620px] lg:w-[680px] xl:w-[740px] max-h-[76vh] sm:max-h-[80vh] md:max-h-[82vh] lg:max-h-[85vh] flex items-end justify-center">
           <Image
-            src="/assets/portrait/portrait-base.png"
-            alt="Martin King"
+            src="/assets/images/talha-badar-cutout.webp"
+            alt="Talha Badar"
             width={1535}
             height={1024}
-            className="w-full h-auto object-contain object-bottom drop-shadow-[0_10px_40px_rgba(0,0,0,0.8)]"
+            className="w-full h-auto object-contain object-bottom drop-shadow-[0_15px_50px_rgba(0,0,0,0.9)]"
             priority
           />
         </div>
 
-        {/* Tech Brand Row across the bottom behind portrait */}
-        <div className="absolute bottom-16 sm:bottom-20 left-0 right-0 z-0">
-          <FloatingTechRow />
-        </div>
-
         {/* Bottom Action Buttons: START A PROJECT (Center) & OPEN PROJECT BRIEF (Right) */}
-        <div className="absolute bottom-5 sm:bottom-6 left-0 right-0 z-30 px-6 sm:px-10 flex items-center justify-between">
+        <div className="absolute bottom-4 sm:bottom-6 left-0 right-0 z-30 px-6 sm:px-10 flex items-center justify-between pointer-events-none">
           <div className="w-1/3 hidden sm:block" />
 
           {/* Center Main CTA: START A PROJECT */}
-          <div className="w-full sm:w-1/3 flex justify-center">
+          <div className="w-full sm:w-1/3 flex justify-center pointer-events-auto">
             <a
-              href="mailto:contact@martinking.dev?subject=Let's%20build%20something"
-              className="px-6 sm:px-8 py-3 bg-[#bbf200] text-[#020807] font-mono text-xs sm:text-sm font-black tracking-widest uppercase rounded shadow-[0_0_25px_rgba(187,242,0,0.45)] hover:bg-[#d4ff33] active:scale-95 transition-all inline-flex items-center gap-2 select-none"
+              href="mailto:info.talhabadar@gmail.com?subject=Let's%20build%20something"
+              className="px-6 sm:px-8 py-2.5 sm:py-3 bg-[#bbf200] text-[#020807] font-sans text-xs sm:text-sm font-extrabold tracking-wider uppercase rounded-lg shadow-[0_4px_24px_rgba(0,0,0,0.5)] hover:bg-[#d4ff33] hover:scale-105 active:scale-95 transition-all inline-flex items-center gap-2 select-none cursor-pointer"
             >
               <span>START A PROJECT</span>
               <ArrowUpRight size={18} className="stroke-[2.5]" />
@@ -182,10 +175,10 @@ export function ContactSection({ data }: ContactSectionProps) {
           </div>
 
           {/* Right Button: OPEN PROJECT BRIEF */}
-          <div className="w-full sm:w-1/3 flex justify-end">
+          <div className="w-full sm:w-1/3 flex justify-end pointer-events-auto">
             <button
               onClick={openBriefModal}
-              className="px-3.5 sm:px-4 py-2 bg-[#020807]/80 border border-[#bbf200]/40 text-[#bbf200] font-mono text-[10px] sm:text-xs font-bold tracking-wider uppercase rounded hover:border-[#bbf200] hover:bg-[#bbf200]/15 transition-all inline-flex items-center gap-1.5"
+              className="px-3.5 sm:px-4 py-2 bg-[#020807]/90 border border-[#bbf200]/50 text-[#bbf200] font-mono text-[10px] sm:text-xs font-bold tracking-wider uppercase rounded-md hover:border-[#bbf200] hover:bg-[#bbf200]/15 transition-all inline-flex items-center gap-1.5 cursor-pointer"
             >
               <span>OPEN PROJECT BRIEF</span>
               <Plus size={14} className="stroke-[2.5]" />

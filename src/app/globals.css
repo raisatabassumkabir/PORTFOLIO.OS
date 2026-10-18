@@ -512,7 +512,48 @@ body.custom-cursor-active * {
   50% { opacity: 1; transform: scaleY(1.2); }
 }
 
+/* Signature Writing Animation */
+@keyframes signatureDraw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.signature-stroke {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: signatureDraw 1.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Tech Marquee Infinite Scroll */
+@keyframes marqueeScroll {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  animation: marqueeScroll 32s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
 /* Typography Classes */
+.font-inter {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
 .font-heading {
   font-family: 'Manrope', sans-serif;
 }

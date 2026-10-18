@@ -291,7 +291,7 @@ export function HeroSection({ data }: HeroSectionProps) {
       className="chapter hero relative h-screen min-h-[700px] w-full flex items-center justify-between overflow-hidden select-none scroll-mt-16 pointer-events-auto"
       style={{
         background:
-          'radial-gradient(ellipse 70% 65% at 50% 48%, #082824 0%, #041714 38%, #020907 70%, #010403 100%), #010403',
+          'radial-gradient(ellipse 70% 60% at 50% 45%, #051613 0%, #030e0c 45%, #020706 80%), #020706',
       }}
     >
       {/* Soft ambient radial emerald glow behind portrait */}
@@ -299,7 +299,7 @@ export function HeroSection({ data }: HeroSectionProps) {
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            'radial-gradient(ellipse 60% 55% at 50% 45%, rgba(10, 48, 42, 0.45) 0%, rgba(2, 9, 7, 0) 75%)',
+            'radial-gradient(ellipse 60% 55% at 50% 45%, rgba(22, 247, 192, 0.08) 0%, transparent 70%)',
         }}
       />
 

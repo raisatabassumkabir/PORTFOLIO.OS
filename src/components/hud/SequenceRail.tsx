@@ -4,6 +4,8 @@ import React from 'react';
 import { useHudStore } from '@/store/useHudStore';
 import { scrollToSection } from '@/lib/navigation';
 
+import { portfolioConfig } from '@/config/portfolio.config';
+
 const sections = [
   { index: 1, label: '01', href: '#home' },
   { index: 2, label: '02', href: '#profile' },
@@ -13,10 +15,25 @@ const sections = [
   { index: 6, label: '06', href: '#contact' },
 ];
 
+const projectRailAccents: Record<string, { accent: string; isLight: boolean }> = {
+  'lets-ryde': { accent: '#008F65', isLight: true },
+  'mia-diagnostic': { accent: '#84DCEE', isLight: false },
+  'clientbook': { accent: '#7E653D', isLight: true },
+  'saif-locators': { accent: '#74BBEB', isLight: false },
+  'linear-craze': { accent: '#8075FF', isLight: false },
+  'coffee-brew': { accent: '#E18B50', isLight: false },
+};
+
 export function SequenceRail() {
   const activeSection = useHudStore((s) => s.activeSection);
+  const activeProjectIndex = useHudStore((s) => s.activeProjectIndex);
   const hudTheme = useHudStore((s) => s.hudTheme);
-  const isLight = hudTheme === 'light-profile';
+
+  const currentProject = portfolioConfig.work.projects[activeProjectIndex] || portfolioConfig.work.projects[0];
+  const pTheme = activeSection === 4 ? (projectRailAccents[currentProject.id] || { accent: '#008F65', isLight: false }) : null;
+
+  const isLight = pTheme ? pTheme.isLight : hudTheme === 'light-profile';
+  const accentColor = pTheme ? pTheme.accent : '#10B981';
 
   // 4px glowing dot position along the 56px line
   const clampedSection = Math.min(Math.max(activeSection, 1), 6);
@@ -30,7 +47,9 @@ export function SequenceRail() {
   return (
     <aside
       aria-label="Sequence Navigation"
-      className="fixed right-5 top-1/2 -translate-y-1/2 z-[70] hidden lg:flex flex-col items-center select-none pointer-events-auto"
+      className={`fixed right-5 top-1/2 -translate-y-1/2 z-[70] hidden lg:flex flex-col items-center select-none transition-all duration-300 ${
+        activeSection === 6 ? 'opacity-0 pointer-events-none translate-x-12' : 'pointer-events-auto opacity-100 translate-x-0'
+      }`}
     >
       {/* Top: SEQUENCE rotated 90deg */}
       <div
@@ -41,15 +60,19 @@ export function SequenceRail() {
         SEQUENCE
       </div>
 
-      {/* Middle: Thin 56px vertical line with single 4px glowing emerald dot */}
+      {/* Middle: Thin 56px vertical line with single 4px glowing dot */}
       <div
         className={`relative w-[1px] h-[56px] my-3 transition-colors duration-300 pointer-events-none ${
           isLight ? 'bg-[#0A1410]/15' : 'bg-white/12'
         }`}
       >
         <div
-          className="absolute left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[#10B981] shadow-[0_0_8px_#10B981] transition-all duration-300"
-          style={{ top: `${dotTop}px` }}
+          className="absolute left-1/2 -translate-x-1/2 w-1 h-1 rounded-full transition-all duration-300"
+          style={{
+            top: `${dotTop}px`,
+            backgroundColor: accentColor,
+            boxShadow: `0 0 8px ${accentColor}`,
+          }}
         />
       </div>
 
@@ -62,15 +85,12 @@ export function SequenceRail() {
               key={sec.label}
               href={sec.href}
               onClick={(e) => handleRailClick(e, sec.index)}
-              className={`font-mono-hud text-[9px] tracking-wider transition-colors duration-200 cursor-pointer pointer-events-auto p-1 ${
-                isActive
-                  ? isLight
-                    ? 'text-[#0A1410] font-bold'
-                    : 'text-[#10B981] font-bold drop-shadow-[0_0_6px_rgba(16,185,129,0.5)]'
-                  : isLight
-                  ? 'text-[#0A1410]/30 hover:text-[#0A1410]'
-                  : 'text-white/22 hover:text-white/60'
-              }`}
+              className="font-mono-hud text-[9px] tracking-wider transition-colors duration-200 cursor-pointer pointer-events-auto p-1"
+              style={{
+                color: isActive ? accentColor : isLight ? 'rgba(10, 20, 16, 0.35)' : 'rgba(255, 255, 255, 0.25)',
+                fontWeight: isActive ? 700 : 500,
+                textShadow: isActive && !isLight ? `0 0 6px ${accentColor}80` : 'none',
+              }}
               title={`Jump to section ${sec.label}`}
             >
               {sec.label}

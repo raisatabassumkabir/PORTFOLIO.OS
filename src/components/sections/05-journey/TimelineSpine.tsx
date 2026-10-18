@@ -11,31 +11,46 @@ interface TimelineSpineProps {
 
 export function TimelineSpine({ nodes, activeIndex, onSelectNode }: TimelineSpineProps) {
   const activeNode = nodes[activeIndex] || nodes[0];
+  const nodeNum = (activeNode.nodeNumber || String(activeIndex + 1).padStart(2, '0')).replace(/^0/, 'Ø');
+
+  const handleClick = () => {
+    const nextIdx = (activeIndex + 1) % nodes.length;
+    onSelectNode(nextIdx);
+  };
 
   return (
-    <div className="relative flex flex-col items-center select-none py-2 h-full">
-      {/* Top spine segment */}
-      <div className="w-[1.5px] h-28 bg-gradient-to-b from-[#132A21] via-[#8B5CF6]/60 to-[#8B5CF6]" />
+    <div className="relative flex flex-col items-center select-none h-full py-0">
+      {/* Thin straight vertical line ABOVE circle (Lavender/Purple with soft glow - 1px thin) */}
+      <div
+        className="w-[1px] flex-1 min-h-[200px] sm:min-h-[240px] lg:min-h-[280px] bg-gradient-to-b from-transparent via-[#8B77E8]/70 to-[#8B77E8]"
+        style={{
+          boxShadow: '0 0 8px rgba(139, 119, 232, 0.45)',
+        }}
+      />
 
-      {/* Main Active Node Circular Ring: glowing purple/emerald circle containing active index */}
-      <div className="relative my-3">
-        {/* Outer glowing purple/emerald ring */}
-        <div
-          className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-[#8B5CF6] bg-[#050B09] flex items-center justify-center transition-all duration-300"
-          style={{
-            boxShadow:
-              '0 0 25px rgba(139, 92, 246, 0.45), 0 0 15px rgba(16, 185, 129, 0.35)',
-          }}
-        >
-          {/* Inner emerald accent ring */}
-          <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full border border-[#10B981]/60 bg-[#071510] flex items-center justify-center font-mono-hud text-xs sm:text-sm font-bold text-white tracking-widest">
-            <span className="text-[#34D399] font-black">{activeNode.nodeNumber}</span>
-          </div>
-        </div>
-      </div>
+      {/* Prominent Circular Ring with THIN 1px border */}
+      <button
+        type="button"
+        onClick={handleClick}
+        className="relative my-0 w-[106px] h-[106px] sm:w-[116px] sm:h-[116px] lg:w-[122px] lg:h-[122px] rounded-full border border-[#8B77E8]/80 bg-[#020706] flex items-center justify-center transition-all duration-300 hover:scale-105 cursor-pointer focus:outline-none flex-shrink-0"
+        style={{
+          boxShadow: '0 0 24px rgba(139, 119, 232, 0.22), inset 0 0 10px rgba(139, 119, 232, 0.05)',
+        }}
+        title="Click to advance role"
+        aria-label={`Current Role ${nodeNum}: ${activeNode.role}`}
+      >
+        <span className="font-mono-hud text-xs sm:text-sm font-bold text-[#a58cff] tracking-widest">
+          {nodeNum}
+        </span>
+      </button>
 
-      {/* Bottom continuous spine line */}
-      <div className="w-[1.5px] flex-1 min-h-[140px] bg-gradient-to-b from-[#8B5CF6] via-[#10B981]/50 to-transparent" />
+      {/* Thin straight vertical line BELOW circle (Mint Green - 1px thin) */}
+      <div
+        className="w-[1px] flex-1 min-h-[200px] sm:min-h-[240px] lg:min-h-[280px] bg-gradient-to-b from-[#00E599] via-[#00E599]/70 to-transparent"
+        style={{
+          boxShadow: '0 0 8px rgba(0, 229, 153, 0.45)',
+        }}
+      />
     </div>
   );
 }

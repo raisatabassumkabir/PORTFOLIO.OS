@@ -17,101 +17,52 @@ export function ExperienceCardStack({
 }: ExperienceCardStackProps) {
   const setCursorVariant = useHudStore((s) => s.setCursorVariant);
   const activeNode = nodes[activeIndex] || nodes[0];
-  const prevNode = activeIndex > 0 ? nodes[activeIndex - 1] : null;
-  const nextNode = activeIndex < nodes.length - 1 ? nodes[activeIndex + 1] : null;
+
+  // Clean hyphenated date matching close-up reference photo
+  const formattedPeriod = (activeNode.period || '').replace(/—/g, '-');
+
+  const handleCardClick = () => {
+    const nextIdx = (activeIndex + 1) % nodes.length;
+    onSelectNode(nextIdx);
+  };
 
   return (
-    <div className="relative flex flex-col items-center justify-center w-full max-w-2xl select-none">
-      {/* Ghosted Previous Role (activeIndex - 1) Above */}
-      {prevNode ? (
-        <div
-          onClick={() => onSelectNode(activeIndex - 1)}
-          className="w-full cursor-pointer transition-all duration-300 mb-2 select-none"
-          style={{
-            opacity: 0.16,
-            transform: 'scale(0.95)',
-            filter: 'blur(1px)',
-          }}
-        >
-          <div className="rounded-xl border border-[#162E25] bg-[#07130F] p-2.5 sm:p-3 flex items-center justify-between hover:opacity-100 transition-opacity">
-            <div>
-              <div className="font-mono-hud text-[9px] sm:text-[10px] text-[#6E857C] uppercase tracking-widest">
-                PREVIOUS NODE : {prevNode.role}
-              </div>
-              <div className="font-mono-hud text-[11px] sm:text-xs text-[#8EA8A0]">
-                {prevNode.period} · {prevNode.company}
-              </div>
-            </div>
-            <span className="font-mono-hud text-xs text-[#00E599] font-bold">{prevNode.nodeNumber}</span>
-          </div>
-        </div>
-      ) : (
-        <div className="h-4 invisible" />
-      )}
-
-      {/* Main Active Role inside bordered dark card */}
+    <div className="relative w-full max-w-[760px] lg:max-w-[800px] xl:max-w-[840px] select-none">
+      {/* Main Active Role Card matching close-up reference photo 1:1 */}
       <div
+        onClick={handleCardClick}
         onMouseEnter={() => setCursorVariant('reticle')}
         onMouseLeave={() => setCursorVariant('default')}
-        className="w-full rounded-xl border border-[#162E25] bg-[#07130F] p-5 sm:p-7 lg:p-8 shadow-2xl transition-all duration-300 z-10"
+        className="w-full rounded-none border-[0.5px] border-[#8B77E8]/35 bg-[#040e0b]/95 min-h-[300px] sm:min-h-[330px] lg:min-h-[345px] py-6 sm:py-7 lg:py-8 px-7 sm:px-9 lg:px-10 flex flex-col justify-center shadow-2xl transition-all duration-500 backdrop-blur-md cursor-pointer"
         style={{
-          opacity: 1,
-          transform: 'translateY(0)',
-          boxShadow: '0 25px 50px -10px rgba(0, 0, 0, 0.85), 0 0 30px rgba(0, 229, 153, 0.05)',
+          boxShadow: '0 25px 70px -10px rgba(0, 0, 0, 0.9), 0 0 30px rgba(139, 119, 232, 0.04)',
         }}
       >
-        {/* Date on Top */}
-        <div className="font-mono-hud text-[11px] sm:text-xs tracking-widest uppercase text-[#8B98A5] mb-1.5 sm:mb-2">
-          {activeNode.period}
+        {/* Date on Top in Lavender / Purple */}
+        <div className="font-mono-hud text-[11px] sm:text-xs font-normal tracking-[0.24em] uppercase text-[#9d8bf0] mb-2.5 sm:mb-3">
+          {formattedPeriod}
         </div>
 
-        {/* Role Title */}
-        <h3 className="font-heading text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight mb-1.5 sm:mb-2">
+        {/* Role Title in Modern Clean Sans (matching reference photo) */}
+        <h3 className="font-inter font-semibold text-3xl sm:text-4xl lg:text-[44px] text-[#eefbf6] tracking-[-0.025em] leading-[1.1] mb-2.5 sm:mb-3">
           {activeNode.role}
         </h3>
 
-        {/* Company & Location in Vivid Emerald */}
-        <div className="font-mono-hud text-xs sm:text-sm text-[#00E599] font-semibold tracking-wider mb-4 sm:mb-5">
+        {/* Company & Location in Crisp Mint Green Sans */}
+        <div className="font-inter text-xs sm:text-[13.5px] lg:text-[14px] font-normal tracking-normal text-[#00E599] mb-5 sm:mb-5.5">
           {activeNode.company}
         </div>
 
-        {/* Highlights with solid round bullets */}
-        <div className="space-y-2 sm:space-y-2.5 font-sans text-xs sm:text-sm text-[#D0E2D9] leading-relaxed">
+        {/* Highlights with subtle bullet points in matching clean sans */}
+        <ul className="space-y-2 sm:space-y-2.5 font-inter text-xs sm:text-[13.5px] lg:text-[14px] leading-[1.6] text-[#9db3aa]">
           {activeNode.highlights.map((bullet, idx) => (
-            <div key={idx} className="flex items-start space-x-2.5">
-              <span className="text-[#00E599] text-sm leading-none mt-0.5">•</span>
+            <li key={idx} className="flex items-start space-x-3">
+              <span className="text-[#7d998e] text-[13px] leading-none select-none mt-1">•</span>
               <span>{bullet}</span>
-            </div>
+            </li>
           ))}
-        </div>
+        </ul>
       </div>
-
-      {/* Ghosted Next Role (activeIndex + 1) Below */}
-      {nextNode ? (
-        <div
-          onClick={() => onSelectNode(activeIndex + 1)}
-          className="w-full cursor-pointer transition-all duration-300 mt-2 select-none"
-          style={{
-            opacity: 0.16,
-            transform: 'scale(0.95)',
-            filter: 'blur(1px)',
-          }}
-        >
-          <div className="rounded-xl border border-[#162E25] bg-[#07130F] p-2.5 sm:p-3 flex items-center justify-between hover:opacity-100 transition-opacity">
-            <div>
-              <div className="font-mono-hud text-[9px] sm:text-[10px] text-[#6E857C] uppercase tracking-widest">
-                NEXT NODE : {nextNode.role}
-              </div>
-              <div className="font-mono-hud text-[11px] sm:text-xs text-[#8EA8A0]">
-                {nextNode.period} · {nextNode.company}
-              </div>
-            </div>
-            <span className="font-mono-hud text-xs text-[#00E599] font-bold">{nextNode.nodeNumber}</span>
-          </div>
-        </div>
-      ) : (
-        <div className="h-4 invisible" />
-      )}
     </div>
   );
 }

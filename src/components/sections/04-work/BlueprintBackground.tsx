@@ -12,8 +12,8 @@ interface BlueprintBackgroundProps {
 
 export function BlueprintBackground({ theme, bg, gridColor, glowColor }: BlueprintBackgroundProps) {
   const finalBg = bg || theme?.bg || '#071013';
-  const finalGrid = gridColor || theme?.gridColor || 'rgba(16, 185, 129, 0.08)';
-  const finalGlow = glowColor || theme?.borderGlow || 'rgba(16, 185, 129, 0.25)';
+  const finalGrid = gridColor || 'rgba(16, 185, 129, 0.07)';
+  const finalGlow = glowColor ? `${glowColor}25` : 'rgba(16, 185, 129, 0.16)';
 
   return (
     <div
@@ -21,19 +21,12 @@ export function BlueprintBackground({ theme, bg, gridColor, glowColor }: Bluepri
       style={{
         backgroundColor: finalBg,
         backgroundImage: `
-          linear-gradient(to right, ${finalGrid} 1px, transparent 1px),
-          linear-gradient(to bottom, ${finalGrid} 1px, transparent 1px)
+          radial-gradient(circle at 74% 38%, ${finalGlow}, transparent 34%),
+          linear-gradient(${finalGrid} 1px, transparent 1px),
+          linear-gradient(90deg, ${finalGrid} 1px, transparent 1px)
         `,
-        backgroundSize: '40px 40px',
+        backgroundSize: 'auto, 54px 54px, 54px 54px',
       }}
-    >
-      {/* Dynamic ambient radial glow */}
-      <div
-        className="absolute top-1/2 left-1/3 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full blur-[160px] opacity-35 transition-all duration-700 pointer-events-none"
-        style={{
-          backgroundColor: finalGlow,
-        }}
-      />
-    </div>
+    />
   );
 }

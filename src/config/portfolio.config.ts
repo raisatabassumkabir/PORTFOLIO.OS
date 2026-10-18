@@ -17,8 +17,8 @@ export const portfolioConfig: PortfolioConfig = {
     taglinePrefix: 'YOU IMAGINE,',
     taglineHighlight: 'I DELIVER',
     lede: 'Transforming ideas into powerful mobile experiences through Flutter, React, and full-stack development.',
-    basePortrait: '/assets/portrait/portrait-base.png',
-    cyberPortrait: '/assets/portrait/portrait-cyber.png',
+    basePortrait: '/assets/portrait/portrait-base.png?v=aligned',
+    cyberPortrait: '/assets/portrait/portrait-cyber.png?v=aligned',
     circuitNodes: [
       { id: 'ai', code: 'AI', title: 'AI / ML', subtitle: 'INTELLIGENT SYSTEMS', anchorX: 58, anchorY: 31 },
       { id: 'api', code: 'API', title: 'BACKEND', subtitle: 'SCALABLE SERVICES', anchorX: 59, anchorY: 41 },
@@ -228,9 +228,9 @@ export const portfolioConfig: PortfolioConfig = {
       {
         id: 'clientbook',
         code: 'P / 03',
-        category: 'CLIENT + BOOKING MANAGEMENT',
+        category: 'CLIENT · BOOKING MANAGEMENT',
         title: 'ClientBook',
-        summary: 'Client records, appointments and business insights for beauty professionals.',
+        summary: 'Client records, appointments and business insights for makeup artists.',
         description: 'Client records, scheduling calendars, personalized kit trackers, and revenue analytics consolidated into a sleek, touch-first mobile workspace.',
         tech: ['Flutter', 'Scheduling', 'Client management'],
         mockupImage: '/assets/projects/clientbook.png',
@@ -424,7 +424,7 @@ export const portfolioConfig: PortfolioConfig = {
         id: 'role-03',
         nodeNumber: '03',
         role: 'Flutter Application Developer',
-        company: 'The UX Bench · Software Studio',
+        company: 'The UX Bench Pvt Ltd · Haripur, Pakistan',
         period: 'JUL 2023 — APR 2025',
         description: 'Crafted scalable, production-grade mobile applications for international clients.',
         highlights: [
@@ -438,7 +438,7 @@ export const portfolioConfig: PortfolioConfig = {
         id: 'role-04',
         nodeNumber: '04',
         role: 'Intern Application Developer',
-        company: 'The UX Bench · Engineering Lab',
+        company: 'The UX Bench Pvt Ltd · Haripur, Pakistan',
         period: 'MAR 2023 — JUN 2023',
         description: 'Contributed to client cross-platform mobile products while strengthening Android and UI/UX engineering fundamentals.',
         highlights: [
@@ -452,7 +452,7 @@ export const portfolioConfig: PortfolioConfig = {
         id: 'role-05',
         nodeNumber: '05',
         role: 'Intern Developer',
-        company: 'Bit Technologies · Innovation Hub',
+        company: 'Bit Technologies · Islamabad, Pakistan',
         period: 'NOV 2022 — FEB 2023',
         description: 'Engineered core features for live mobile client applications and wrote maintainable production code.',
         highlights: [
@@ -497,6 +497,6 @@ export const portfolioConfig: PortfolioConfig = {
       { label: 'TWITTER / X', href: 'https://twitter.com/martinking' },
       { label: 'SCHEDULE CALL', href: 'https://cal.com/martinking' },
     ],
-    copyright: '© 2026 Martin King. Powered by PORTFOLIO.OS. All systems operational.',
+    copyright: '© 2026 Talha Badar. All rights reserved.',
   },
 };

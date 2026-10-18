@@ -6,7 +6,7 @@ import { ProjectMatrixCard, Atmosphere } from './ProjectMatrixCard';
 import { BlueprintBackground } from './BlueprintBackground';
 import { StrokeHeading } from '@/components/ui/StrokeHeading';
 import { useHudStore } from '@/store/useHudStore';
-import { ChevronLeft, ChevronRight, ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 
 interface WorkSectionProps {
   data: WorkConfig;
@@ -14,57 +14,69 @@ interface WorkSectionProps {
 
 const atmospheres: Record<string, Atmosphere> = {
   'lets-ryde': {
-    bg: '#E3F9F1',
-    grid: 'rgba(10,30,22,0.06)',
-    cardLeft: '#D4F5E9',
+    bg: '#E1FAEF',
+    grid: 'rgba(0, 143, 101, 0.08)',
+    cardLeft: 'radial-gradient(ellipse at 50% 55%, rgba(0, 143, 101, 0.16), transparent 70%), #E1FAEF',
     cardRight: '#FFFFFF',
-    text: '#08140E',
-    accent: '#059669',
+    text: '#07110E',
+    muted: '#4C655C',
+    accent: '#008F65',
+    border: 'rgba(0, 143, 101, 0.28)',
     isLight: true,
   },
   'mia-diagnostic': {
-    bg: '#060E12',
-    grid: 'rgba(16,185,129,0.06)',
-    cardLeft: '#09151B',
-    cardRight: '#081217',
-    text: '#F3F5F4',
-    accent: '#38BDF8',
+    bg: '#081418',
+    grid: 'rgba(132, 220, 238, 0.07)',
+    cardLeft: 'radial-gradient(ellipse at 50% 55%, rgba(132, 220, 238, 0.16), transparent 70%), #081418',
+    cardRight: '#0C1D22',
+    text: '#EEFBF6',
+    muted: '#92B3B5',
+    accent: '#84DCEE',
+    border: 'rgba(132, 220, 238, 0.28)',
     isLight: false,
   },
   'clientbook': {
-    bg: '#FAF6EE',
-    grid: 'rgba(217, 119, 6, 0.08)',
-    cardLeft: '#F5EFE0',
-    cardRight: '#FFFFFF',
-    text: '#1F1A12',
-    accent: '#D97706',
+    bg: '#E2D5B8',
+    grid: 'rgba(126, 101, 61, 0.08)',
+    cardLeft: 'radial-gradient(ellipse at 50% 55%, rgba(126, 101, 61, 0.16), transparent 70%), #E2D5B8',
+    cardRight: '#F2E7CF',
+    text: '#2B2216',
+    muted: '#69573D',
+    accent: '#7E653D',
+    border: 'rgba(126, 101, 61, 0.28)',
     isLight: true,
   },
   'saif-locators': {
-    bg: '#132D46',
-    grid: 'rgba(255,255,255,0.06)',
-    cardLeft: '#163450',
-    cardRight: '#163450',
-    text: '#F3F5F4',
-    accent: '#58A6FF',
+    bg: '#1A3A54',
+    grid: 'rgba(116, 187, 235, 0.08)',
+    cardLeft: 'radial-gradient(ellipse at 50% 55%, rgba(116, 187, 235, 0.16), transparent 70%), #1A3A54',
+    cardRight: '#1F4563',
+    text: '#EFF8FF',
+    muted: '#A6C7DC',
+    accent: '#74BBEB',
+    border: 'rgba(116, 187, 235, 0.28)',
     isLight: false,
   },
   'linear-craze': {
-    bg: '#0D0B1C',
-    grid: 'rgba(129, 140, 248, 0.08)',
-    cardLeft: '#14112B',
-    cardRight: '#100D22',
-    text: '#F5F3FF',
-    accent: '#818CF8',
+    bg: '#181946',
+    grid: 'rgba(128, 117, 255, 0.08)',
+    cardLeft: 'radial-gradient(ellipse at 50% 55%, rgba(128, 117, 255, 0.16), transparent 70%), #181946',
+    cardRight: '#1F2054',
+    text: '#F4F3FF',
+    muted: '#AEADDA',
+    accent: '#8075FF',
+    border: 'rgba(128, 117, 255, 0.28)',
     isLight: false,
   },
   'coffee-brew': {
-    bg: '#140C08',
-    grid: 'rgba(245, 158, 11, 0.08)',
-    cardLeft: '#1C120C',
-    cardRight: '#180E09',
-    text: '#FEF3C7',
-    accent: '#D97706',
+    bg: '#311B14',
+    grid: 'rgba(225, 139, 80, 0.08)',
+    cardLeft: 'radial-gradient(ellipse at 50% 55%, rgba(225, 139, 80, 0.16), transparent 70%), #311B14',
+    cardRight: '#41241A',
+    text: '#FFF4EB',
+    muted: '#C7A38D',
+    accent: '#E18B50',
+    border: 'rgba(225, 139, 80, 0.28)',
     isLight: false,
   },
 };
@@ -84,7 +96,9 @@ export function WorkSection({ data }: WorkSectionProps) {
       cardLeft: currentProject.theme.cardBg,
       cardRight: currentProject.theme.cardBg,
       text: currentProject.theme.textColor,
+      muted: '#759087',
       accent: currentProject.theme.accentColor,
+      border: 'rgba(16, 185, 129, 0.28)',
       isLight: currentProject.theme.bg === '#E6FAF3' || currentProject.theme.bg === '#FAF6EE',
     };
 
@@ -132,6 +146,9 @@ export function WorkSection({ data }: WorkSectionProps) {
     }
   };
 
+  const handlePrevProject = prevProject;
+  const handleNextProject = nextProject;
+
   return (
     <section
       id="work"
@@ -152,37 +169,62 @@ export function WorkSection({ data }: WorkSectionProps) {
           glowColor={currentAtmosphere.accent}
         />
 
-        <div className="relative z-10 w-full max-w-[1520px] mx-auto flex flex-col justify-center h-full max-h-[calc(100vh-6.5rem)]">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 xl:gap-16 items-center">
-            {/* Left Column (lg:col-span-5 xl:col-span-4): Eyebrow + Heading */}
-            <div className="lg:col-span-5 xl:col-span-4 flex flex-col justify-center">
-              <p
-                className="font-mono-hud text-xs tracking-widest uppercase mb-4 sm:mb-6"
-                style={{ color: currentAtmosphere.accent }}
-              >
-                {data.sectionCode}
-              </p>
+        <div className="relative z-10 w-full max-w-[1520px] mx-auto h-full flex flex-col justify-center">
+          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.85fr)] gap-8 lg:gap-10 xl:gap-14 items-start w-full">
+            {/* Left Column: Heading starts at top */}
+            <div className="flex flex-col items-start w-full pt-1">
+              {/* Eyebrow: • 04 / PROJECT MATRIX */}
+              <div className="flex items-center space-x-2 font-mono-hud text-[11px] sm:text-xs font-semibold tracking-[0.2em] uppercase mb-4 sm:mb-5">
+                <span
+                  className="w-1.5 h-1.5 rounded-full transition-colors duration-500"
+                  style={{ backgroundColor: currentAtmosphere.accent }}
+                />
+                <span
+                  className="transition-colors duration-500"
+                  style={{ color: currentAtmosphere.accent }}
+                >
+                  {data.sectionCode}
+                </span>
+              </div>
 
-              <StrokeHeading
-                solidText={data.titleSolid}
-                outlineText={data.titleOutline}
-                lightTheme={isLight}
-                size="lg"
-              />
+              {/* Main Heading: Selected systems. Real product territory. */}
+              <h2 className="font-heading font-extrabold tracking-[-0.04em] leading-[0.98] transition-colors duration-500 text-3xl sm:text-4xl lg:text-[46px] xl:text-[52px]">
+                <span
+                  className="block transition-colors duration-500"
+                  style={{ color: currentAtmosphere.text }}
+                >
+                  {data.titleSolid}
+                </span>
+                <span
+                  className="block transition-colors duration-500 font-extrabold"
+                  style={{
+                    color: 'transparent',
+                    WebkitTextStroke: `1.2px ${currentAtmosphere.text}45`,
+                  }}
+                >
+                  {data.titleOutline}
+                </span>
+              </h2>
             </div>
 
-            {/* Right Column (lg:col-span-7 xl:col-span-8): Project Counter + Card + Bottom Controls */}
-            <div className="lg:col-span-7 xl:col-span-8 flex flex-col justify-center w-full">
-              {/* Top Project Counter (e.g. 05 ------- 06) */}
+            {/* Right Column: Project Counter + Card + Bottom Controls */}
+            <div className="flex flex-col items-end w-full pt-1">
+              {/* Top Project Counter: 01 ─────── 06 */}
               <div className="flex items-center justify-end space-x-3 mb-3 font-mono-hud text-xs font-semibold">
-                <span style={{ color: currentAtmosphere.accent }}>
+                <span
+                  className="transition-colors duration-500"
+                  style={{ color: currentAtmosphere.accent }}
+                >
                   {String(activeProjectIndex + 1).padStart(2, '0')}
                 </span>
                 <span
-                  className="w-16 sm:w-24 h-[1px] opacity-30"
-                  style={{ backgroundColor: isLight ? '#08140E' : '#FFFFFF' }}
+                  className="w-16 sm:w-24 h-[1px] transition-colors duration-500"
+                  style={{ backgroundColor: `${currentAtmosphere.accent}66` }}
                 />
-                <span className={isLight ? 'text-[#08140E]/50' : 'text-white/50'}>
+                <span
+                  className="transition-colors duration-500"
+                  style={{ color: `${currentAtmosphere.text}66` }}
+                >
                   {String(projects.length).padStart(2, '0')}
                 </span>
               </div>
@@ -198,29 +240,28 @@ export function WorkSection({ data }: WorkSectionProps) {
 
               {/* Bottom Control / Status Bar */}
               <div
-                className={`mt-3 sm:mt-4 pt-2 flex flex-row items-center justify-between gap-3 font-mono-hud text-[10px] sm:text-[11px] tracking-wider uppercase transition-colors duration-500 ${
-                  isLight ? 'text-[#08140E]/70' : 'text-[#8EA8A0]'
-                }`}
+                className="w-full mt-3 sm:mt-4 pt-1 flex flex-row items-center justify-between gap-3 font-mono-hud text-[10px] sm:text-[11px] tracking-[0.16em] uppercase transition-colors duration-500"
+                style={{ color: currentAtmosphere.muted }}
               >
                 {/* Left Prompt */}
                 <div className="opacity-75 flex items-center space-x-2">
                   <span>SCROLL TO ADVANCE · CLICK TO INSPECT</span>
                 </div>
 
-                {/* Right External Trigger */}
+                {/* Right External Trigger: Underlined text link matching reference photos */}
                 <div>
                   <a
                     href="https://github.com/martinking"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`px-3 py-1 rounded-sm border font-mono-hud text-[10px] sm:text-[11px] font-medium tracking-wider uppercase transition-all duration-200 inline-flex items-center space-x-1.5 ${
-                      isLight
-                        ? 'border-[#08140E]/30 hover:border-[#08140E] text-[#08140E]'
-                        : 'border-white/30 hover:border-white text-white'
-                    }`}
+                    className="inline-flex items-center space-x-1.5 pb-0.5 border-b font-mono-hud text-[10.5px] sm:text-[11px] font-bold tracking-[0.2em] uppercase transition-all duration-200 cursor-pointer"
+                    style={{
+                      borderColor: currentAtmosphere.accent,
+                      color: currentAtmosphere.text,
+                    }}
                   >
                     <span>COMPLETE PORTFOLIO</span>
-                    <ArrowUpRight size={12} />
+                    <ArrowUpRight size={12} style={{ color: currentAtmosphere.accent }} />
                   </a>
                 </div>
               </div>

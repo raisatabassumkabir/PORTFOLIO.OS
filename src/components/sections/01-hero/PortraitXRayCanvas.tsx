@@ -58,8 +58,8 @@ export function PortraitXRayCanvas({
           : 'brightness(1.15) contrast(1.4) hue-rotate(145deg) saturate(2.5)',
       }
     : {
-        WebkitMaskImage: `radial-gradient(ellipse 260px 180px at ${pointerX}px ${pointerY}px, rgba(0,0,0,1) 20%, rgba(0,0,0,0.6) 55%, transparent 100%)`,
-        maskImage: `radial-gradient(ellipse 260px 180px at ${pointerX}px ${pointerY}px, rgba(0,0,0,1) 20%, rgba(0,0,0,0.6) 55%, transparent 100%)`,
+        WebkitMaskImage: `radial-gradient(ellipse 280px 220px at ${pointerX}px ${pointerY}px, rgba(0,0,0,1) 0%, rgba(0,0,0,0.9) 25%, rgba(0,0,0,0.45) 55%, rgba(0,0,0,0.1) 80%, transparent 100%)`,
+        maskImage: `radial-gradient(ellipse 280px 220px at ${pointerX}px ${pointerY}px, rgba(0,0,0,1) 0%, rgba(0,0,0,0.9) 25%, rgba(0,0,0,0.45) 55%, rgba(0,0,0,0.1) 80%, transparent 100%)`,
         opacity: isHoveringHero ? 1 : 0,
         transition: 'opacity 0.3s ease',
         filter: isCustomCyber
@@ -76,15 +76,9 @@ export function PortraitXRayCanvas({
       }}
       onClick={onToggleLock}
       className="hero-portrait hero-portrait--reveal scene-copy hero-reveal-ready hero-reveal-active pointer-events-auto cursor-pointer absolute bottom-0 left-1/2 z-10 flex h-[88vh] w-auto -translate-x-1/2 items-end justify-center select-none flex-shrink-0"
-      style={{
-        WebkitMaskImage:
-          'radial-gradient(ellipse 78% 74% at 50% 58%, #000 50%, rgba(0, 0, 0, 0.92) 65%, rgba(0, 0, 0, 0.4) 82%, transparent 96%)',
-        maskImage:
-          'radial-gradient(ellipse 78% 74% at 50% 58%, #000 50%, rgba(0, 0, 0, 0.92) 65%, rgba(0, 0, 0, 0.4) 82%, transparent 96%)',
-      }}
     >
       <div className="relative flex h-full w-auto items-end justify-center">
-        {/* Faint Ambient Green Beam (Background Glow) directly behind the portrait layer */}
+        {/* Faint Ambient Green Beam (Background Glow) directly behind the spotlight position */}
         {!isCircuitLocked && (
           <div
             className="pointer-events-none absolute z-0 -translate-x-1/2 -translate-y-1/2 rounded-full"
@@ -92,24 +86,13 @@ export function PortraitXRayCanvas({
               left: `${pointerX}px`,
               top: `${pointerY}px`,
               width: '520px',
-              height: '180px',
+              height: '240px',
               background:
-                'radial-gradient(ellipse, rgba(16, 185, 129, 0.08) 0%, rgba(16, 185, 129, 0.02) 50%, transparent 80%)',
-              filter: 'blur(32px)',
+                'radial-gradient(ellipse, rgba(22, 247, 192, 0.08) 0%, rgba(22, 247, 192, 0.02) 50%, transparent 80%)',
+              filter: 'blur(36px)',
             }}
           />
         )}
-
-        {/* Ambient Backlight Glow behind Bust */}
-        <div
-          className={`absolute inset-0 rounded-full blur-[100px] transition-all duration-700 pointer-events-none ${
-            isCircuitLocked
-              ? 'opacity-80 bg-[#00E599]/35 scale-105'
-              : isHoveringHero
-              ? 'opacity-35 bg-[#10B981]/22 scale-100'
-              : 'opacity-20 bg-[#10B981]/12 scale-95'
-          }`}
-        />
 
         {/* Both base and cyber images fill 100% height and align to bottom center */}
         <img
