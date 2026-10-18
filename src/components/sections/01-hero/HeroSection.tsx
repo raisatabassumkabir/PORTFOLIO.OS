@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import gsap from 'gsap';
 import { HeroConfig } from '@/types/portfolio';
 import { PortraitXRayCanvas } from './PortraitXRayCanvas';
 import { CircuitCalloutNodes } from './CircuitCalloutNodes';
@@ -64,7 +63,6 @@ function pointOnPolyline(points: { x: number; y: number }[], progress: number) {
 export function HeroSection({ data }: HeroSectionProps) {
   const isCircuitLocked = useHudStore((s) => s.isCircuitLocked);
   const toggleCircuitLock = useHudStore((s) => s.toggleCircuitLock);
-  const hasBooted = useHudStore((s) => s.hasBooted);
 
   const heroRef = useRef<HTMLDivElement | null>(null);
   const portraitRef = useRef<HTMLDivElement | null>(null);
@@ -74,7 +72,6 @@ export function HeroSection({ data }: HeroSectionProps) {
   const [proximities, setProximities] = useState<number[]>([0.08, 0.08, 0.08, 0.08, 0.08]);
   const [pointerPos, setPointerPos] = useState({ x: 600, y: 350 });
   const [isHoveringHero, setIsHoveringHero] = useState(false);
-  const [isIdleRunning, setIsIdleRunning] = useState(false);
 
   // Timing constants from deployed HERO_CONFIG.idle
   const returnDelay = 2.5; // 2.5s inactivity before idle starts
@@ -103,50 +100,6 @@ export function HeroSection({ data }: HeroSectionProps) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isCircuitLocked, toggleCircuitLock]);
 
-  // Hero Intro Staggered Entrance Animation (matching scratch/deployed/main.js heroIntro)
-  useEffect(() => {
-    if (!hasBooted) return;
-
-    // Reset idle sweep timer so the Lissajous sweep starts immediately when hero is revealed!
-    lastMeaningfulRef.current = performance.now() - returnDelay * 1000;
-    isIdleRunningRef.current = true;
-    setIsIdleRunning(true);
-
-    const ctx = gsap.context(() => {
-      const tl = gsap.timeline({ defaults: { ease: 'expo.out' } });
-
-      // Letters in TALHA BADAR rotate and slide up with 26ms stagger
-      tl.fromTo(
-        '.hero .char',
-        { y: '110%', rotateZ: 5, opacity: 0 },
-        { y: '0%', rotateZ: 0, opacity: 1, duration: 1.05, stagger: 0.026 }
-      )
-        // Subtitle, tagline, and controls slide up with 75ms stagger (-=780ms overlap)
-        .fromTo(
-          '.hero .reveal-line',
-          { y: 24, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.7, stagger: 0.075 },
-          '-=0.78'
-        )
-        // Center bust scales from 0.94 and rises 24px (-=760ms overlap)
-        .fromTo(
-          '.hero-portrait',
-          { scale: 0.94, y: 24, opacity: 0 },
-          { scale: 1, y: 0, opacity: 1, duration: 1.0 },
-          '-=0.76'
-        )
-        // Right side skill cards slide in from right (+28px) (-=820ms overlap)
-        .fromTo(
-          '.hero-intel',
-          { x: 28, opacity: 0 },
-          { x: 0, opacity: 1, duration: 0.85 },
-          '-=0.82'
-        );
-    }, heroRef);
-
-    return () => ctx.revert();
-  }, [hasBooted]);
-
   // Master Unified Animation & Interaction Loop (Matching HeroScene.js and SkillModules.js)
   useEffect(() => {
     let animId: number;
@@ -160,11 +113,6 @@ export function HeroSection({ data }: HeroSectionProps) {
       if (!heroRef.current || !portraitRef.current) {
         animId = requestAnimationFrame(loop);
         return;
-      }
-
-      // Freeze idle timer while booting so the sweep starts at t=0 when hero reveals
-      if (!hasBooted) {
-        lastMeaningfulRef.current = performance.now() - returnDelay * 1000;
       }
 
       const heroRect = heroRef.current.getBoundingClientRect();
@@ -188,10 +136,6 @@ export function HeroSection({ data }: HeroSectionProps) {
           const targetV = 0.5 + Math.cos(t * Math.PI) * 0.29;
           targetX = portraitRect.left - heroRect.left + targetU * portraitRect.width;
           targetY = portraitRect.top - heroRect.top + (1 - targetV) * portraitRect.height;
-          if (!isIdleRunningRef.current) {
-            currentPosRef.current.x = targetX;
-            currentPosRef.current.y = targetY;
-          }
           isIdleRunningRef.current = true;
         } else {
           isIdleRunningRef.current = false;
@@ -289,20 +233,18 @@ export function HeroSection({ data }: HeroSectionProps) {
       setProximities(nextProximities);
       setPointerPos({ x: Math.round(currentX), y: Math.round(currentY) });
       setIsHoveringHero(isUserInteractingRef.current || isIdleRunningRef.current);
-      setIsIdleRunning(isIdleRunningRef.current);
 
       animId = requestAnimationFrame(loop);
     };
 
     animId = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(animId);
-  }, [isCircuitLocked, hasBooted]);
+  }, [isCircuitLocked]);
 
   // Handle immediate user interaction on the Hero container
   const handleUserInteraction = (
     e: React.MouseEvent<HTMLElement> | React.TouchEvent<HTMLElement>
   ) => {
-    if (!hasBooted) return;
     lastMeaningfulRef.current = performance.now();
     isUserInteractingRef.current = true;
     if (!heroRef.current) return;
@@ -315,7 +257,6 @@ export function HeroSection({ data }: HeroSectionProps) {
   // Global mousemove/touchmove listener so any user activity immediately takes over
   useEffect(() => {
     const handleGlobal = (e: MouseEvent | TouchEvent) => {
-      if (!hasBooted) return;
       lastMeaningfulRef.current = performance.now();
       isUserInteractingRef.current = true;
       if (!heroRef.current) return;
@@ -407,26 +348,24 @@ export function HeroSection({ data }: HeroSectionProps) {
       <div className="absolute left-[clamp(2rem,5vw,5.5rem)] top-[50%] -translate-y-1/2 z-20 flex flex-col items-start pointer-events-auto select-none">
         {/* Giant solid white first name with subtle bottom inner shadow */}
         <h1
-          className="font-heading font-black select-none m-0 p-0 text-white tracking-[-0.04em] leading-[0.84] overflow-hidden"
+          className="font-heading font-black select-none m-0 p-0 text-white tracking-[-0.04em] leading-[0.84]"
           style={{
             fontSize: 'clamp(4.5rem, 8.8vw, 9.2rem)',
             textShadow: '0 8px 24px rgba(0,0,0,0.6)',
           }}
         >
-          <span className="inline-block overflow-hidden py-1">
-            {data.firstName.split('').map((char, i) => (
-              <span
-                key={`char-fn-${i}`}
-                className="char inline-block origin-bottom-left transition-transform duration-300 hover:-translate-y-1 hover:-rotate-1 hover:text-[#62f5b7]"
-              >
-                {char}
-              </span>
-            ))}
-          </span>
+          {data.firstName.split('').map((char, i) => (
+            <span
+              key={`char-fn-${i}`}
+              className="char inline-block transition-transform duration-300 hover:-translate-y-1 hover:-rotate-1 hover:text-[#62f5b7]"
+            >
+              {char}
+            </span>
+          ))}
         </h1>
 
         {/* Giant double-wireframe outlined last name tightly stacked underneath */}
-        <div className="relative select-none overflow-hidden py-1" style={{ marginTop: '-0.04em' }}>
+        <div className="relative select-none" style={{ marginTop: '-0.04em' }}>
           <span
             className="font-heading font-black block select-none pointer-events-none stroke-text tracking-[-0.04em] leading-[0.84]"
             style={{
@@ -436,7 +375,7 @@ export function HeroSection({ data }: HeroSectionProps) {
             {data.lastName.split('').map((char, i) => (
               <span
                 key={`char-ln-${i}`}
-                className="char inline-block origin-bottom-left transition-transform duration-300 hover:-translate-y-1 hover:-rotate-1 hover:text-[#62f5b7]"
+                className="char inline-block transition-transform duration-300 hover:-translate-y-1 hover:-rotate-1 hover:text-[#62f5b7]"
               >
                 {char}
               </span>
@@ -445,7 +384,7 @@ export function HeroSection({ data }: HeroSectionProps) {
         </div>
 
         {/* Horizontal 24px emerald line + Mobile Application Developer */}
-        <div className="reveal-line mt-8 flex items-center gap-3">
+        <div className="mt-8 flex items-center gap-3">
           <div
             style={{
               width: '24px',
@@ -464,7 +403,7 @@ export function HeroSection({ data }: HeroSectionProps) {
 
         {/* Indented Tagline: YOU IMAGINE, I DELIVER */}
         <div
-          className="reveal-line mt-2 font-mono-hud text-[10px] sm:text-[10.5px] uppercase font-medium flex items-center gap-1.5"
+          className="mt-2 font-mono-hud text-[10px] sm:text-[10.5px] uppercase font-medium flex items-center gap-1.5"
           style={{
             paddingLeft: '36px',
             letterSpacing: '0.24em',
@@ -483,7 +422,6 @@ export function HeroSection({ data }: HeroSectionProps) {
         onToggleLock={toggleCircuitLock}
         heroPointerPos={pointerPos}
         isHoveringHero={isHoveringHero}
-        isIdleRunning={isIdleRunning}
         onContainerRef={(el) => {
           portraitRef.current = el;
         }}
@@ -491,7 +429,7 @@ export function HeroSection({ data }: HeroSectionProps) {
 
       {/* Bottom Center: Control Bar (Matching Reference Layout) */}
       <div
-        className="absolute z-30 select-none pointer-events-auto"
+        className="absolute z-30 flex items-center gap-3.5 select-none pointer-events-auto"
         style={{
           bottom: '28px',
           left: '50%',
@@ -499,62 +437,60 @@ export function HeroSection({ data }: HeroSectionProps) {
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="reveal-line flex items-center gap-3.5">
-          {/* Left: vertical 16px emerald line */}
-          <div
-            style={{
-              width: '1px',
-              height: '16px',
-              backgroundColor: '#10B981',
-              flexShrink: 0,
-            }}
-          />
+        {/* Left: vertical 16px emerald line */}
+        <div
+          style={{
+            width: '1px',
+            height: '16px',
+            backgroundColor: '#10B981',
+            flexShrink: 0,
+          }}
+        />
 
-          {/* Center: Monospace instruction label */}
-          <span
-            className="font-mono-hud whitespace-nowrap"
-            style={{
-              fontSize: '9.5px',
-              letterSpacing: '0.16em',
-              color: 'rgba(255, 255, 255, 0.6)',
-            }}
-          >
-            {isCircuitLocked ? 'CIRCUIT VIEW · ESC TO RETURN' : 'MOVE TO REVEAL · CLICK TO LOCK'}
-          </span>
+        {/* Center: Monospace instruction label */}
+        <span
+          className="font-mono-hud whitespace-nowrap"
+          style={{
+            fontSize: '9.5px',
+            letterSpacing: '0.16em',
+            color: 'rgba(255, 255, 255, 0.6)',
+          }}
+        >
+          {isCircuitLocked ? 'CIRCUIT VIEW · ESC TO RETURN' : 'MOVE TO REVEAL · CLICK TO LOCK'}
+        </span>
 
-          {/* Right: Rounded pill button */}
-          <button
-            type="button"
-            onClick={() => toggleCircuitLock()}
-            className="transition-all duration-300 font-mono-hud whitespace-nowrap cursor-pointer flex items-center gap-1.5"
-            style={
-              isCircuitLocked
-                ? {
-                    borderRadius: '9999px',
-                    background: '#62f5b7',
-                    color: '#02120b',
-                    fontWeight: 600,
-                    padding: '6px 16px',
-                    fontSize: '11px',
-                    boxShadow: '0 0 20px rgba(98, 245, 183, 0.45)',
-                    border: 'none',
-                  }
-                : {
-                    borderRadius: '9999px',
-                    border: '1px solid rgba(16, 185, 129, 0.4)',
-                    backgroundColor: 'rgba(5, 16, 11, 0.8)',
-                    padding: '6px 16px',
-                    fontSize: '11px',
-                    color: '#A7F3D0',
-                  }
-            }
-          >
-            {isCircuitLocked && (
-              <span className="w-1.5 h-1.5 rounded-full bg-[#02120b] animate-pulse" />
-            )}
-            <span>{isCircuitLocked ? 'Back to scroll ✕' : 'Lock circuit view ↗'}</span>
-          </button>
-        </div>
+        {/* Right: Rounded pill button */}
+        <button
+          type="button"
+          onClick={() => toggleCircuitLock()}
+          className="transition-all duration-300 font-mono-hud whitespace-nowrap cursor-pointer flex items-center gap-1.5"
+          style={
+            isCircuitLocked
+              ? {
+                  borderRadius: '9999px',
+                  background: '#62f5b7',
+                  color: '#02120b',
+                  fontWeight: 600,
+                  padding: '6px 16px',
+                  fontSize: '11px',
+                  boxShadow: '0 0 20px rgba(98, 245, 183, 0.45)',
+                  border: 'none',
+                }
+              : {
+                  borderRadius: '9999px',
+                  border: '1px solid rgba(16, 185, 129, 0.4)',
+                  backgroundColor: 'rgba(5, 16, 11, 0.8)',
+                  padding: '6px 16px',
+                  fontSize: '11px',
+                  color: '#A7F3D0',
+                }
+          }
+        >
+          {isCircuitLocked && (
+            <span className="w-1.5 h-1.5 rounded-full bg-[#02120b] animate-pulse" />
+          )}
+          <span>{isCircuitLocked ? 'Back to scroll ✕' : 'Lock circuit view ↗'}</span>
+        </button>
       </div>
 
       {/* Right: 5 Proximity-Illuminated Skill HUD Modules (Exact match to SkillModules.js) */}

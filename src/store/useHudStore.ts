@@ -13,8 +13,6 @@ interface HudState {
   cursorVariant: CursorVariant;
   isBriefModalOpen: boolean;
   activeCaseStudyId: string | null;
-  isBooting: boolean;
-  hasBooted: boolean;
 
   setActiveSection: (index: number, theme?: HudThemeMode) => void;
   toggleCircuitLock: (locked?: boolean) => void;
@@ -26,7 +24,6 @@ interface HudState {
   closeBriefModal: () => void;
   openCaseStudy: (id: string) => void;
   closeCaseStudy: () => void;
-  completeBoot: () => void;
 }
 
 export const useHudStore = create<HudState>((set) => ({
@@ -39,8 +36,6 @@ export const useHudStore = create<HudState>((set) => ({
   cursorVariant: 'default',
   isBriefModalOpen: false,
   activeCaseStudyId: null,
-  isBooting: true,
-  hasBooted: false,
 
   setActiveSection: (index, theme) => {
     let computedTheme: HudThemeMode = theme || 'dark-cyber';
@@ -73,6 +68,4 @@ export const useHudStore = create<HudState>((set) => ({
   openCaseStudy: (id) => set({ activeCaseStudyId: id }),
 
   closeCaseStudy: () => set({ activeCaseStudyId: null }),
-
-  completeBoot: () => set({ isBooting: false, hasBooted: true }),
 }));

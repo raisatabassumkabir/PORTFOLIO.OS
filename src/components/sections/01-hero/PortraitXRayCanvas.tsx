@@ -10,7 +10,6 @@ interface PortraitXRayCanvasProps {
   portraitMousePos?: { x: number; y: number } | null;
   heroPointerPos?: { x: number; y: number };
   isHoveringHero: boolean;
-  isIdleRunning?: boolean;
   onContainerRef?: (el: HTMLDivElement | null) => void;
 }
 
@@ -21,7 +20,6 @@ export function PortraitXRayCanvas({
   onToggleLock,
   heroPointerPos,
   isHoveringHero,
-  isIdleRunning,
   onContainerRef,
 }: PortraitXRayCanvasProps) {
   const portraitRef = useRef<HTMLDivElement | null>(null);
@@ -49,8 +47,6 @@ export function PortraitXRayCanvas({
   const pointerX = pointerPos.x;
   const pointerY = pointerPos.y;
 
-  const isVisible = isCircuitLocked || isHoveringHero || Boolean(isIdleRunning);
-
   // Seamless soft-feathered spotlight mask (zero borders, pure feathered Gaussian-like alpha falloff)
   const cyberMaskStyle: React.CSSProperties = isCircuitLocked
     ? {
@@ -64,8 +60,8 @@ export function PortraitXRayCanvas({
     : {
         WebkitMaskImage: `radial-gradient(ellipse 280px 220px at ${pointerX}px ${pointerY}px, rgba(0,0,0,1) 0%, rgba(0,0,0,0.9) 25%, rgba(0,0,0,0.45) 55%, rgba(0,0,0,0.1) 80%, transparent 100%)`,
         maskImage: `radial-gradient(ellipse 280px 220px at ${pointerX}px ${pointerY}px, rgba(0,0,0,1) 0%, rgba(0,0,0,0.9) 25%, rgba(0,0,0,0.45) 55%, rgba(0,0,0,0.1) 80%, transparent 100%)`,
-        opacity: isVisible ? 1 : 0,
-        transition: 'opacity 0.4s ease',
+        opacity: isHoveringHero ? 1 : 0,
+        transition: 'opacity 0.3s ease',
         filter: isCustomCyber
           ? 'none'
           : 'brightness(1.15) contrast(1.4) hue-rotate(145deg) saturate(2.5)',
@@ -85,7 +81,7 @@ export function PortraitXRayCanvas({
         {/* Faint Ambient Green Beam (Background Glow) directly behind the spotlight position */}
         {!isCircuitLocked && (
           <div
-            className="pointer-events-none absolute z-0 -translate-x-1/2 -translate-y-1/2 rounded-full transition-opacity duration-500"
+            className="pointer-events-none absolute z-0 -translate-x-1/2 -translate-y-1/2 rounded-full"
             style={{
               left: `${pointerX}px`,
               top: `${pointerY}px`,
@@ -94,7 +90,6 @@ export function PortraitXRayCanvas({
               background:
                 'radial-gradient(ellipse, rgba(22, 247, 192, 0.08) 0%, rgba(22, 247, 192, 0.02) 50%, transparent 80%)',
               filter: 'blur(36px)',
-              opacity: isVisible ? 1 : 0,
             }}
           />
         )}
