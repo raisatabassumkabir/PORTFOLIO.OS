@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { PortfolioConfig } from '@/types/portfolio';
+import { useHudStore } from '@/store/useHudStore';
 import { useSectionObserver } from '@/hooks/useSectionObserver';
 import { HeroSection } from '@/components/sections/01-hero/HeroSection';
 import { ProfileSection } from '@/components/sections/02-profile/ProfileSection';
@@ -14,9 +15,21 @@ interface PortfolioClientViewProps {
   data: PortfolioConfig;
 }
 
-export function PortfolioClientView({ data }: PortfolioClientViewProps) {
+export function PortfolioClientView({ data: initialData }: PortfolioClientViewProps) {
   // Observes viewport scroll and updates sequence rail + HUD contrast
   useSectionObserver();
+
+  const customConfig = useHudStore((s) => s.customConfig);
+
+  const data: PortfolioConfig = React.useMemo(() => {
+    if (!customConfig) return initialData;
+    return {
+      ...initialData,
+      meta: { ...initialData.meta, ...customConfig.meta },
+      hero: { ...initialData.hero, ...customConfig.hero },
+      profile: { ...initialData.profile, ...customConfig.profile },
+    };
+  }, [initialData, customConfig]);
 
   return (
     <div className="relative w-full flex flex-col">

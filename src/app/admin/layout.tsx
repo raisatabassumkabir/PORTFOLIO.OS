@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Shield, LayoutDashboard, Briefcase, MessageSquare, ArrowLeft, Lock } from 'lucide-react';
+import { Shield, LayoutDashboard, Briefcase, MessageSquare, ArrowLeft, Lock, User } from 'lucide-react';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -81,6 +81,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const navItems = [
     { label: 'OVERVIEW', href: '/admin', icon: LayoutDashboard },
+    { label: 'PROFILE & TEMPLATE', href: '/admin/profile', icon: User },
     { label: 'INQUIRIES', href: '/admin/inquiries', icon: MessageSquare },
     { label: 'PROJECTS', href: '/admin/projects', icon: Briefcase },
   ];

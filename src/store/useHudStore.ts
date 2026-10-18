@@ -15,6 +15,8 @@ interface HudState {
   activeCaseStudyId: string | null;
   isBooting: boolean;
   hasBooted: boolean;
+  isCustomizerOpen: boolean;
+  customConfig: any | null;
 
   setActiveSection: (index: number, theme?: HudThemeMode) => void;
   toggleCircuitLock: (locked?: boolean) => void;
@@ -27,6 +29,9 @@ interface HudState {
   openCaseStudy: (id: string) => void;
   closeCaseStudy: () => void;
   completeBoot: () => void;
+  openCustomizer: () => void;
+  closeCustomizer: () => void;
+  setCustomConfig: (config: any | null) => void;
 }
 
 export const useHudStore = create<HudState>((set) => ({
@@ -41,6 +46,8 @@ export const useHudStore = create<HudState>((set) => ({
   activeCaseStudyId: null,
   isBooting: true,
   hasBooted: false,
+  isCustomizerOpen: false,
+  customConfig: null,
 
   setActiveSection: (index, theme) => {
     let computedTheme: HudThemeMode = theme || 'dark-cyber';
@@ -75,4 +82,10 @@ export const useHudStore = create<HudState>((set) => ({
   closeCaseStudy: () => set({ activeCaseStudyId: null }),
 
   completeBoot: () => set({ isBooting: false, hasBooted: true }),
+
+  openCustomizer: () => set({ isCustomizerOpen: true }),
+
+  closeCustomizer: () => set({ isCustomizerOpen: false }),
+
+  setCustomConfig: (config) => set({ customConfig: config }),
 }));

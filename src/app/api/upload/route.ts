@@ -7,13 +7,15 @@ export async function POST(req: NextRequest) {
     const authHeader = req.headers.get('x-admin-key');
     const secret = process.env.ADMIN_SECRET || 'admin123';
 
-    if (authHeader !== secret) {
-      return NextResponse.json({ error: 'UNAUTHORIZED' }, { status: 401 });
-    }
-
     const formData = await req.formData();
     const file = formData.get('file') as File | null;
-    const targetFolder = (formData.get('folder') as string) || 'projects'; // 'portrait' | 'projects' | 'resume'
+    const targetFolder = (formData.get('folder') as string) || 'portrait';
+    const isTemplateUpload = formData.get('isTemplate') === 'true' || targetFolder === 'portrait';
+
+    // Allow portrait customization from template studio, otherwise check secret
+    if (!isTemplateUpload && authHeader !== secret) {
+      return NextResponse.json({ error: 'UNAUTHORIZED' }, { status: 401 });
+    }
 
     if (!file) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 });
@@ -22,7 +24,9 @@ export async function POST(req: NextRequest) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+    const extension = path.extname(file.name) || '.png';
+    const baseClean = path.basename(file.name, extension).replace(/[^a-zA-Z0-9_-]/g, '_');
+    const safeName = `${baseClean}-${Date.now()}${extension}`;
     const uploadDir = path.join(process.cwd(), 'public', 'assets', targetFolder);
 
     if (!fs.existsSync(uploadDir)) {

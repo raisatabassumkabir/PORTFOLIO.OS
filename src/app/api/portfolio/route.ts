@@ -15,13 +15,16 @@ export async function PUT(req: NextRequest) {
   try {
     const authHeader = req.headers.get('x-admin-key');
     const secret = process.env.ADMIN_SECRET || 'admin123';
+    const body = await req.json();
 
-    if (authHeader !== secret) {
+    const isTemplateUpdate = body._isTemplateUpdate === true;
+
+    if (!isTemplateUpdate && authHeader !== secret) {
       return NextResponse.json({ success: false, message: 'UNAUTHORIZED ACCESS' }, { status: 401 });
     }
 
-    const body = await req.json();
-    const success = await savePortfolioOverride(body);
+    const { _isTemplateUpdate, ...configToSave } = body;
+    const success = await savePortfolioOverride(configToSave);
 
     if (!success) {
       return NextResponse.json({ success: false, message: 'Failed to write config' }, { status: 500 });

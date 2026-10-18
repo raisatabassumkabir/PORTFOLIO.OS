@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useHudStore } from '@/store/useHudStore';
 import { scrollToSection } from '@/lib/navigation';
 import { portfolioConfig } from '@/config/portfolio.config';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Sliders } from 'lucide-react';
 
 const navItems = [
   { label: 'HOME', href: '#home', index: 1 },
@@ -19,6 +19,7 @@ export function TopNavbar() {
   const activeSection = useHudStore((s) => s.activeSection);
   const activeProjectIndex = useHudStore((s) => s.activeProjectIndex);
   const openBriefModal = useHudStore((s) => s.openBriefModal);
+  const openCustomizer = useHudStore((s) => s.openCustomizer);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -218,8 +219,18 @@ export function TopNavbar() {
             })}
           </nav>
 
-          {/* Top-Right Action Trigger: Clean borderless dot + text matching reference photos */}
-          <div className="flex items-center gap-4 pointer-events-auto">
+          {/* Top-Right Action Trigger: Customize OS + Let's Connect */}
+          <div className="flex items-center gap-3 sm:gap-4 pointer-events-auto">
+            {/* Template Studio / Customize OS button */}
+            <button
+              onClick={openCustomizer}
+              className="flex items-center gap-1.5 font-mono-hud text-[10px] font-semibold tracking-[0.14em] uppercase px-3 py-1.5 rounded-full border border-[#00E599]/30 bg-[#00E599]/10 text-[#00E599] hover:bg-[#00E599] hover:text-[#02100B] hover:shadow-[0_0_15px_rgba(0,229,153,0.4)] transition-all cursor-pointer pointer-events-auto select-none"
+              title="Customize photo, name, and identity"
+            >
+              <Sliders size={12} />
+              <span className="hidden sm:inline">CUSTOMIZE OS</span>
+            </button>
+
             <button
               onClick={openBriefModal}
               className="group flex items-center gap-2 font-mono-hud text-[11px] font-medium tracking-[0.14em] uppercase transition-all duration-200 cursor-pointer pointer-events-auto hover:text-white"

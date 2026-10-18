@@ -7,6 +7,7 @@ import { CustomCursor } from '@/components/hud/CustomCursor';
 import { BootSequence } from '@/components/hud/BootSequence';
 import { ProjectBriefModal } from '@/components/modals/ProjectBriefModal';
 import { CaseStudyDrawer } from '@/components/modals/CaseStudyDrawer';
+import { TemplateCustomizerModal } from '@/components/modals/TemplateCustomizerModal';
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -64,6 +65,7 @@ export default function RootLayout({
         {/* Global Modals */}
         <ProjectBriefModal />
         <CaseStudyDrawer />
+        <TemplateCustomizerModal />
 
         {/* Page Content */}
         <main className="relative z-0">{children}</main>
