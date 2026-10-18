@@ -47,9 +47,7 @@ export function SequenceRail() {
   return (
     <aside
       aria-label="Sequence Navigation"
-      className={`fixed right-5 top-1/2 -translate-y-1/2 z-[70] hidden lg:flex flex-col items-center select-none transition-all duration-300 ${
-        activeSection === 6 ? 'opacity-0 pointer-events-none translate-x-12' : 'pointer-events-auto opacity-100 translate-x-0'
-      }`}
+      className="fixed right-5 top-1/2 -translate-y-1/2 z-[70] hidden lg:flex flex-col items-center select-none transition-all duration-300 pointer-events-auto opacity-100 translate-x-0"
     >
       {/* Top: SEQUENCE rotated 90deg */}
       <div

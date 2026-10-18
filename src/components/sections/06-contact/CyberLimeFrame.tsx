@@ -24,28 +24,7 @@ export function CyberLimeFrame({
         </defs>
       </svg>
 
-      {/* Right Side Vertical SEQUENCE Rail on the Lime Outer Frame */}
-      <aside
-        className="hidden md:flex absolute right-1.5 lg:right-2 top-1/2 -translate-y-1/2 flex-col items-center gap-2 z-20 pointer-events-none text-[#020807]"
-        aria-hidden="true"
-      >
-        <span
-          className="font-mono text-[9px] font-bold tracking-[0.22em] text-[#020807] mb-2"
-          style={{ writingMode: 'vertical-rl' }}
-        >
-          SEQUENCE
-        </span>
-        <div className="flex flex-col items-center gap-2 font-mono text-[10px] font-semibold text-[#020807]/60">
-          <span>01</span>
-          <span>02</span>
-          <span>03</span>
-          <span>04</span>
-          <span>05</span>
-          <span className="w-5 h-5 rounded-sm bg-[#020807] text-[#bbf200] font-bold flex items-center justify-center text-[10px] shadow-sm">
-            06
-          </span>
-        </div>
-      </aside>
+
 
       {/* Main Inner Dark Cinematic Card with Precision ClipPath */}
       <div
