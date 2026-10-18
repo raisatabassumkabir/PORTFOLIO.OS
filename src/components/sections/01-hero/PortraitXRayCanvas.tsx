@@ -158,41 +158,56 @@ export function PortraitXRayCanvas({
               draggable={false}
             />
 
-            {/* Layer C: Electric Cyan/Emerald Cyber Duotone Overlay */}
+            {/* Silhouette-Masked FX: Cyber Duotone, PCB Circuit Matrix & Holographic Scanlines */}
             <div
               className="absolute inset-0 pointer-events-none"
               style={{
-                background:
-                  'linear-gradient(135deg, rgba(0, 229, 153, 0.35) 0%, rgba(56, 189, 248, 0.45) 50%, rgba(16, 185, 129, 0.3) 100%)',
-                mixBlendMode: 'color',
+                WebkitMaskImage: `url("${baseImage}")`,
+                maskImage: `url("${baseImage}")`,
+                WebkitMaskSize: 'contain',
+                maskSize: 'contain',
+                WebkitMaskRepeat: 'no-repeat',
+                maskRepeat: 'no-repeat',
+                WebkitMaskPosition: 'bottom center',
+                maskPosition: 'bottom center',
               }}
-            />
+            >
+              {/* Layer C: Electric Cyan/Emerald Cyber Duotone Overlay */}
+              <div
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                  background:
+                    'linear-gradient(135deg, rgba(0, 229, 153, 0.45) 0%, rgba(56, 189, 248, 0.55) 50%, rgba(16, 185, 129, 0.4) 100%)',
+                  mixBlendMode: 'color',
+                }}
+              />
 
-            {/* Layer D: Sub-surface PCB Motherboard Bus & Circuit Matrix */}
-            <div
-              className="absolute inset-0 pointer-events-none"
-              style={{
-                backgroundImage: `
-                  radial-gradient(circle at 50% 35%, rgba(0, 229, 153, 0.22) 0%, transparent 65%),
-                  linear-gradient(rgba(0, 229, 153, 0.16) 1px, transparent 1px),
-                  linear-gradient(90deg, rgba(0, 229, 153, 0.16) 1px, transparent 1px)
-                `,
-                backgroundSize: '100% 100%, 22px 22px, 22px 22px',
-                mixBlendMode: 'screen',
-                opacity: 0.8,
-              }}
-            />
+              {/* Layer D: Sub-surface PCB Motherboard Bus & Circuit Matrix */}
+              <div
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                  backgroundImage: `
+                    radial-gradient(circle at 50% 35%, rgba(0, 229, 153, 0.35) 0%, transparent 65%),
+                    linear-gradient(rgba(0, 229, 153, 0.22) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(0, 229, 153, 0.22) 1px, transparent 1px)
+                  `,
+                  backgroundSize: '100% 100%, 22px 22px, 22px 22px',
+                  mixBlendMode: 'screen',
+                  opacity: 0.85,
+                }}
+              />
 
-            {/* Layer E: Holographic Scanlines */}
-            <div
-              className="absolute inset-0 pointer-events-none"
-              style={{
-                background:
-                  'repeating-linear-gradient(to bottom, transparent 0 2px, rgba(0, 229, 153, 0.12) 3px 4px)',
-                mixBlendMode: 'overlay',
-                opacity: 0.65,
-              }}
-            />
+              {/* Layer E: Holographic Scanlines */}
+              <div
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                  background:
+                    'repeating-linear-gradient(to bottom, transparent 0 2px, rgba(0, 229, 153, 0.16) 3px 4px)',
+                  mixBlendMode: 'overlay',
+                  opacity: 0.75,
+                }}
+              />
+            </div>
 
             {/* Layer F: Interactive Dynamic Targeting Reticle & HUD Telemetry */}
             {!isCircuitLocked && (

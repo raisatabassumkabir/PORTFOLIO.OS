@@ -26,8 +26,16 @@ export function PortfolioClientView({ data: initialData }: PortfolioClientViewPr
     return {
       ...initialData,
       meta: { ...initialData.meta, ...customConfig.meta },
-      hero: { ...initialData.hero, ...customConfig.hero },
-      profile: { ...initialData.profile, ...customConfig.profile },
+      hero: {
+        ...initialData.hero,
+        ...customConfig.hero,
+        circuitNodes: customConfig.hero?.circuitNodes || initialData.hero.circuitNodes,
+      },
+      profile: {
+        ...initialData.profile,
+        ...customConfig.profile,
+        metrics: customConfig.profile?.metrics || initialData.profile.metrics,
+      },
     };
   }, [initialData, customConfig]);
 

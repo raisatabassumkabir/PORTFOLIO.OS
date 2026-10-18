@@ -24,10 +24,11 @@ export function CircuitCalloutNodes({
   onCardRef,
 }: CircuitCalloutNodesProps) {
   const setCursorVariant = useHudStore((s) => s.setCursorVariant);
+  const safeNodes = nodes || [];
 
   return (
     <div className="hero-intel hero-skill-layer" aria-label="Technical specializations">
-      {nodes.map((node, index) => {
+      {safeNodes.map((node, index) => {
         const top = TOPS[index] || `${25 + index * 11.5}%`;
         const proximity = nodeProximities
           ? nodeProximities[index]

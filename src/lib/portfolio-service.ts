@@ -13,6 +13,21 @@ export async function getPortfolioData(): Promise<PortfolioConfig> {
       return {
         ...portfolioConfig,
         ...parsed,
+        meta: { ...portfolioConfig.meta, ...(parsed.meta || {}) },
+        hero: {
+          ...portfolioConfig.hero,
+          ...(parsed.hero || {}),
+          circuitNodes: parsed.hero?.circuitNodes || portfolioConfig.hero.circuitNodes,
+        },
+        profile: {
+          ...portfolioConfig.profile,
+          ...(parsed.profile || {}),
+          metrics: parsed.profile?.metrics || portfolioConfig.profile.metrics,
+        },
+        stack: { ...portfolioConfig.stack, ...(parsed.stack || {}) },
+        work: { ...portfolioConfig.work, ...(parsed.work || {}) },
+        journey: { ...portfolioConfig.journey, ...(parsed.journey || {}) },
+        contact: { ...portfolioConfig.contact, ...(parsed.contact || {}) },
       };
     }
   } catch (error) {
