@@ -67,7 +67,7 @@ export function ContactSection({ data }: ContactSectionProps) {
         </svg>
 
         {/* Top Header Bar inside Dark Card */}
-        <div className="absolute top-0 left-0 right-0 z-20 pt-8 sm:pt-9 md:pt-10 px-6 sm:px-10 flex items-center justify-between pointer-events-none">
+        <div className="absolute top-0 left-0 right-0 z-20 pt-11 sm:pt-12 md:pt-14 px-6 sm:px-10 flex items-center justify-between pointer-events-none">
           {/* Top-Left Brand Monogram */}
           <div className="font-heading font-black text-2xl sm:text-3xl text-white tracking-tight select-none pointer-events-auto">
             TB<span className="text-[#bbf200]">.</span>
@@ -81,8 +81,8 @@ export function ContactSection({ data }: ContactSectionProps) {
         </div>
 
         {/* Headline in Top-Center (Signature sign removed) */}
-        <div className="relative z-20 flex flex-col items-center text-center pt-3.5 sm:pt-4 md:pt-5 px-4">
-          <p className="font-mono text-[10px] sm:text-xs font-bold text-[#bbf200] tracking-[0.24em] uppercase mb-1 sm:mb-2">
+        <div className="relative z-20 flex flex-col items-center text-center pt-7 sm:pt-8 md:pt-9 px-4">
+          <p className="font-mono text-[10px] sm:text-xs font-bold text-[#bbf200] tracking-[0.24em] uppercase mb-1.5 sm:mb-2.5">
             06 // FINAL TRANSMISSION
           </p>
 
