@@ -407,13 +407,13 @@ export function HeroSection({ data }: HeroSectionProps) {
       <div className="absolute left-[clamp(2rem,5vw,5.5rem)] top-[50%] -translate-y-1/2 z-20 flex flex-col items-start pointer-events-auto select-none">
         {/* Giant solid white first name with subtle bottom inner shadow */}
         <h1
-          className="font-heading font-black select-none m-0 p-0 text-white tracking-[-0.04em] leading-[0.84] overflow-hidden"
+          className="font-heading font-black select-none m-0 p-0 text-white tracking-[-0.04em] leading-[0.84] overflow-visible"
           style={{
             fontSize: 'clamp(4.5rem, 8.8vw, 9.2rem)',
             textShadow: '0 8px 24px rgba(0,0,0,0.6)',
           }}
         >
-          <span className="inline-block overflow-hidden py-1">
+          <span className="inline-block py-1 pr-2 overflow-visible">
             {data.firstName.split('').map((char, i) => (
               <span
                 key={`char-fn-${i}`}
@@ -426,9 +426,9 @@ export function HeroSection({ data }: HeroSectionProps) {
         </h1>
 
         {/* Giant double-wireframe outlined last name tightly stacked underneath */}
-        <div className="relative select-none overflow-hidden py-1" style={{ marginTop: '-0.04em' }}>
+        <div className="relative select-none overflow-visible py-1 pr-4" style={{ marginTop: '-0.04em' }}>
           <span
-            className="font-heading font-black block select-none pointer-events-none stroke-text tracking-[-0.04em] leading-[0.84]"
+            className="font-heading font-black block select-none pointer-events-none stroke-text tracking-[-0.04em] leading-[0.84] overflow-visible pr-2"
             style={{
               fontSize: 'clamp(4.5rem, 8.8vw, 9.2rem)',
             }}
