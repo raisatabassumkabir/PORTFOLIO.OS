@@ -20,14 +20,10 @@ export function TechMatrixGrid({
     <div
       onMouseEnter={() => onHoverChange && onHoverChange(true)}
       onMouseLeave={() => onHoverChange && onHoverChange(false)}
-      className="grid grid-cols-3 gap-[1px] bg-[rgba(117,255,213,0.22)] border border-[rgba(117,255,213,0.28)] border-b-[rgba(117,255,213,0.4)] select-none w-full max-w-[760px] shadow-[0_10px_40px_rgba(0,0,0,0.5)]"
-      style={{
-        borderBottom: '1px solid rgba(117, 255, 213, 0.45)',
-      }}
+      className="grid grid-cols-3 gap-[1px] bg-[rgba(117,255,213,0.25)] border border-[rgba(117,255,213,0.25)] select-none w-full max-w-[760px] shadow-[0_10px_40px_rgba(0,0,0,0.5)]"
     >
       {items.map((item, index) => {
         const isActive = activeIndex === index;
-        const isBottomRow = index >= 6;
 
         return (
           <div
@@ -39,8 +35,6 @@ export function TechMatrixGrid({
             onMouseEnter={() => onSelectIndex(index)}
             onClick={() => onSelectIndex(index)}
             className={`group skill-cell relative p-4 flex flex-col justify-between min-h-[132px] transition-all duration-350 cursor-pointer ${
-              isBottomRow ? 'border-b border-[rgba(117,255,213,0.4)]' : ''
-            } ${
               isActive
                 ? 'bg-[rgba(25,87,67,0.28)] shadow-[inset_0_0_25px_rgba(98,245,183,0.08)]'
                 : 'bg-[rgba(3,12,10,0.72)] hover:bg-[rgba(25,87,67,0.28)] hover:shadow-[inset_0_0_25px_rgba(98,245,183,0.08)]'
