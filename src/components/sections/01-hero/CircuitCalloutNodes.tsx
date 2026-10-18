@@ -26,7 +26,7 @@ export function CircuitCalloutNodes({
   const setCursorVariant = useHudStore((s) => s.setCursorVariant);
 
   return (
-    <div className="hero-skill-layer" aria-label="Technical specializations">
+    <div className="hero-intel hero-skill-layer" aria-label="Technical specializations">
       {nodes.map((node, index) => {
         const top = TOPS[index] || `${25 + index * 11.5}%`;
         const proximity = nodeProximities

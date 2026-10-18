@@ -4,6 +4,7 @@ import { TopNavbar } from '@/components/hud/TopNavbar';
 import { SequenceRail } from '@/components/hud/SequenceRail';
 import { TelemetryBar } from '@/components/hud/TelemetryBar';
 import { CustomCursor } from '@/components/hud/CustomCursor';
+import { BootSequence } from '@/components/hud/BootSequence';
 import { ProjectBriefModal } from '@/components/modals/ProjectBriefModal';
 import { CaseStudyDrawer } from '@/components/modals/CaseStudyDrawer';
 
@@ -49,6 +50,9 @@ export default function RootLayout({
         suppressHydrationWarning
         className="bg-[#050B09] text-[#F3F5F4] antialiased selection:bg-[#00E599] selection:text-[#050B09] min-h-screen relative overflow-x-clip"
       >
+        {/* HUD Boot Sequence Cinematic Overlay */}
+        <BootSequence />
+
         {/* Custom Interactive Desktop Cursor */}
         <CustomCursor />
 
