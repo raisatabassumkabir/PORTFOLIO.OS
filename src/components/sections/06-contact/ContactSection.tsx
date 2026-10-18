@@ -106,7 +106,7 @@ export function ContactSection({ data }: ContactSectionProps) {
         </div>
 
         {/* Two-Column Navigation: PAGES (Left) & CONNECT (Right) */}
-        <div className="absolute inset-y-0 left-0 right-0 z-20 flex items-center justify-between px-6 sm:px-12 md:px-16 pointer-events-none">
+        <div className="absolute inset-y-0 left-0 right-0 z-20 flex items-center justify-between px-12 sm:px-20 md:px-32 lg:px-40 xl:px-52 pointer-events-none">
           {/* Left: PAGES */}
           <nav className="pointer-events-auto flex flex-col items-start gap-1 sm:gap-2">
             <span className="font-mono text-[10px] sm:text-[11px] font-bold text-[#bbf200] tracking-[0.2em] uppercase mb-1">
