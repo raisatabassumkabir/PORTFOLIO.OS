@@ -74,13 +74,15 @@ const TECH_ITEMS = [
 ];
 
 export function FloatingTechRow() {
+  const repeatedItems = [...TECH_ITEMS, ...TECH_ITEMS, ...TECH_ITEMS];
+
   return (
     <div className="w-full overflow-hidden pointer-events-none select-none opacity-90 py-2 flex">
       {/* Seamless Infinite Marquee Track */}
       <div className="flex shrink-0 animate-marquee items-center">
         {/* Track Half 1 */}
         <div className="flex shrink-0 items-center gap-16 sm:gap-20 md:gap-24 lg:gap-28 pr-16 sm:pr-20 md:pr-24 lg:pr-28">
-          {TECH_ITEMS.map((item, idx) => (
+          {repeatedItems.map((item, idx) => (
             <div key={`tech-1-${idx}`} className="flex flex-col items-center justify-center gap-2 text-[#bbf200] flex-shrink-0">
               {item.icon}
               <span className="font-heading font-black text-xs sm:text-sm md:text-base tracking-tight text-[#bbf200]">
@@ -97,7 +99,7 @@ export function FloatingTechRow() {
 
         {/* Track Half 2 (Exact duplicate for seamless looping without jump) */}
         <div className="flex shrink-0 items-center gap-16 sm:gap-20 md:gap-24 lg:gap-28 pr-16 sm:pr-20 md:pr-24 lg:pr-28" aria-hidden="true">
-          {TECH_ITEMS.map((item, idx) => (
+          {repeatedItems.map((item, idx) => (
             <div key={`tech-2-${idx}`} className="flex flex-col items-center justify-center gap-2 text-[#bbf200] flex-shrink-0">
               {item.icon}
               <span className="font-heading font-black text-xs sm:text-sm md:text-base tracking-tight text-[#bbf200]">
