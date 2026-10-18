@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import gsap from 'gsap';
 import { HeroConfig } from '@/types/portfolio';
+import { portfolioConfig } from '@/config/portfolio.config';
 import { PortraitXRayCanvas } from './PortraitXRayCanvas';
 import { CircuitCalloutNodes } from './CircuitCalloutNodes';
 import { useHudStore } from '@/store/useHudStore';
@@ -559,7 +560,7 @@ export function HeroSection({ data }: HeroSectionProps) {
 
       {/* Right: 5 Proximity-Illuminated Skill HUD Modules (Exact match to SkillModules.js) */}
       <CircuitCalloutNodes
-        nodes={data.circuitNodes}
+        nodes={data.circuitNodes || portfolioConfig.hero.circuitNodes || []}
         isLocked={isCircuitLocked}
         nodeIsLit={proximities.map((p) => p > 0.4)}
         nodeProximities={proximities}

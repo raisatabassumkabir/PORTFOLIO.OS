@@ -16,15 +16,15 @@ interface CircuitCalloutNodesProps {
 const TOPS = ['25%', '36.5%', '48%', '59.5%', '71%'];
 
 export function CircuitCalloutNodes({
-  nodes,
+  nodes = [],
   isLocked,
-  nodeIsLit,
+  nodeIsLit = [],
   nodeProximities,
   onHoverNode,
   onCardRef,
 }: CircuitCalloutNodesProps) {
   const setCursorVariant = useHudStore((s) => s.setCursorVariant);
-  const safeNodes = nodes || [];
+  const safeNodes = Array.isArray(nodes) ? nodes : [];
 
   return (
     <div className="hero-intel hero-skill-layer" aria-label="Technical specializations">

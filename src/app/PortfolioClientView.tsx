@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { PortfolioConfig } from '@/types/portfolio';
+import { portfolioConfig } from '@/config/portfolio.config';
 import { useHudStore } from '@/store/useHudStore';
 import { useSectionObserver } from '@/hooks/useSectionObserver';
 import { HeroSection } from '@/components/sections/01-hero/HeroSection';
@@ -29,13 +30,12 @@ export function PortfolioClientView({ data: initialData }: PortfolioClientViewPr
       hero: {
         ...initialData.hero,
         ...customConfig.hero,
-        circuitNodes: customConfig.hero?.circuitNodes || initialData.hero.circuitNodes,
+        circuitNodes:
+          Array.isArray(customConfig.hero?.circuitNodes) && customConfig.hero.circuitNodes.length > 0
+            ? customConfig.hero.circuitNodes
+            : initialData.hero?.circuitNodes || portfolioConfig.hero.circuitNodes,
       },
-      profile: {
-        ...initialData.profile,
-        ...customConfig.profile,
-        metrics: customConfig.profile?.metrics || initialData.profile.metrics,
-      },
+      profile: { ...initialData.profile, ...customConfig.profile },
     };
   }, [initialData, customConfig]);
 
